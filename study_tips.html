@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Tips • Student Wellbeing Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        /* =============================================
+           STUDY TIPS — Page-Specific Styles
+           ============================================= */
+
+        /* Hero banner for this page */
+        .study-hero {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 60%, #fce7f3 100%);
+            padding: 80px 5% 70px;
+            text-align: center;
+        }
+
+        body.dark .study-hero {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d1b69 60%, #3b0764 100%);
+        }
+
+        .study-hero h1 {
+            margin-bottom: 18px;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+        }
+
+        .study-hero p {
+            max-width: 640px;
+            margin: 0 auto 36px;
+            font-size: 1.1rem;
+        }
+
+        /* Quick jump nav */
+        .jump-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .jump-nav a {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            color: var(--accent);
+            padding: 9px 20px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .jump-nav a:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Section headings with emoji accent */
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-light);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 6px 14px;
+            border-radius: 50px;
+            margin-bottom: 14px;
+        }
+
+        /* ---- POMODORO TIMER ---- */
+        .pomodoro-widget {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            max-width: 520px;
+            margin: 32px auto;
+        }
+
+        .pomodoro-widget h3 { margin-bottom: 6px; }
+        .pomodoro-widget > p { margin-bottom: 28px; font-size: 0.95rem; }
+
+        .timer-mode-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            background: var(--bg-color);
+            border: 2px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .mode-btn.active, .mode-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .timer-display {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: 5rem;
+            color: var(--text-color);
+            letter-spacing: 0.05em;
+            line-height: 1;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+        .timer-display.urgent { color: #ef4444; }
+
+        .timer-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+            min-height: 1.4em;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 13px 32px;
+            border-radius: 50px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .timer-btn.start { background: var(--accent); color: white; }
+        .timer-btn.start:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .timer-btn.reset { background: var(--bg-color); color: var(--text-muted); border: 2px solid var(--border); }
+        .timer-btn.reset:hover { border-color: var(--accent); color: var(--accent); }
+
+        .timer-progress {
+            height: 6px;
+            background: var(--border);
+            border-radius: 6px;
+            margin: 22px 0 6px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            border-radius: 6px;
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .pomodoro-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .pomodoro-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 6px;
+        }
+
+        .p-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: background 0.3s;
+        }
+
+        .p-dot.done { background: var(--accent); }
+
+        /* ---- STUDY QUIZ ---- */
+        .quiz-widget {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 44px 40px;
+            box-shadow: var(--shadow);
+            margin: 32px 0;
+        }
+
+        .quiz-question {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .quiz-option {
+            background: var(--bg-color);
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius-sm);
+            padding: 16px 18px;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.25s;
+            line-height: 1.4;
+        }
+
+        .quiz-option:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .quiz-option.correct { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
+        body.dark .quiz-option.correct { background: #052e16; color: #4ade80; }
+        .quiz-option.wrong   { background: #fff1f1; border-color: #ef4444; color: #dc2626; }
+        body.dark .quiz-option.wrong   { background: #2a0a0a; color: #f87171; }
+
+        .quiz-feedback {
+            background: var(--accent-light);
+            border-left: 5px solid var(--accent);
+            border-radius: var(--border-radius-sm);
+            padding: 18px 22px;
+            font-size: 0.97rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            display: none;
+        }
+
+        .quiz-feedback.visible { display: block; }
+
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+        }
+
+        .quiz-progress-text { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+
+        .quiz-next {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 11px 28px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s;
+        }
+
+        .quiz-next:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .quiz-next.visible { display: inline-flex; }
+
+        .quiz-result {
+            text-align: center;
+            padding: 30px 0;
+            display: none;
+        }
+
+        .quiz-result.visible { display: block; }
+        .quiz-result .score { font-size: 3rem; color: var(--accent); font-family: 'DM Serif Display', serif; }
+        .quiz-result p { font-size: 1.05rem; margin: 12px 0; }
+        .quiz-restart { background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 50px; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 16px; transition: all 0.3s; }
+        .quiz-restart:hover { background: var(--accent-hover); }
+
+        /* ---- TECHNIQUE CARDS ---- */
+        .technique-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .technique-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+
+        .technique-header {
+            padding: 28px 28px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+        }
+
+        .technique-icon {
+            width: 52px; height: 52px;
+            background: var(--accent-light);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .technique-header h3 { font-size: 1.2rem; margin-bottom: 4px; }
+        .technique-header .badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 50px;
+        }
+
+        .technique-body { padding: 0 28px 28px; }
+        .technique-body p { font-size: 0.96rem; margin-bottom: 14px; }
+
+        .how-to-list { padding: 0; margin: 0; }
+        .how-to-list li {
+            padding: 9px 0 9px 28px;
+            position: relative;
+            font-size: 0.93rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .how-to-list li:last-child { border-bottom: none; }
+
+        .how-to-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: 0;
+            width: 18px; height: 18px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 11px;
+        }
+
+        .science-note {
+            background: var(--accent-light);
+            border-radius: var(--border-radius-sm);
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        /* ---- SCHEDULE BUILDER ---- */
+        .schedule-builder {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 44px 40px;
+            box-shadow: var(--shadow);
+            margin: 32px 0;
+        }
+
+        .schedule-builder h3 { margin-bottom: 8px; }
+        .schedule-builder > p { margin-bottom: 28px; font-size: 0.97rem; }
+
+        .schedule-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .schedule-field label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .schedule-field select,
+        .schedule-field input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--border-radius-sm);
+            border: 1.5px solid var(--border);
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        .schedule-field select:focus,
+        .schedule-field input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .schedule-generate {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 13px 32px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .schedule-generate:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+        .schedule-output {
+            margin-top: 28px;
+            display: none;
+        }
+
+        .schedule-output.visible { display: block; }
+
+        .schedule-block {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 10px;
+            font-size: 0.93rem;
+            font-weight: 600;
+        }
+
+        .schedule-block.study { background: #dbeafe; color: #1e40af; }
+        .schedule-block.break { background: #f0fdf4; color: #15803d; }
+        .schedule-block.long-break { background: #fef3c7; color: #92400e; }
+        body.dark .schedule-block.study { background: #1e3a5f; color: #93c5fd; }
+        body.dark .schedule-block.break { background: #052e16; color: #4ade80; }
+        body.dark .schedule-block.long-break { background: #451a03; color: #fbbf24; }
+
+        .block-time { font-size: 0.8rem; opacity: 0.8; min-width: 60px; }
+        .block-icon { font-size: 1.1rem; }
+
+        /* ---- MYTH BUSTERS ---- */
+        .myth-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .myth-item {
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius-sm);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .myth-question {
+            padding: 18px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            font-weight: 700;
+            font-size: 0.97rem;
+            color: var(--text-color);
+            gap: 12px;
+            transition: background 0.25s;
+        }
+
+        .myth-question:hover { background: var(--accent-light); }
+
+        .myth-question .myth-icon { font-size: 1.2rem; flex-shrink: 0; }
+        .myth-question .chevron { font-size: 0.8rem; color: var(--accent); transition: transform 0.3s; flex-shrink: 0; }
+        .myth-item.open .chevron { transform: rotate(180deg); }
+
+        .myth-answer {
+            padding: 0 22px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+            background: var(--bg-color);
+        }
+
+        .myth-item.open .myth-answer {
+            max-height: 500px;
+            padding: 18px 22px;
+        }
+
+        /* ---- CHECKLIST ---- */
+        .checklist {
+            padding: 0;
+            margin: 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.97rem;
+        }
+
+        .checklist li:last-child { border-bottom: none; }
+
+        .checklist input[type="checkbox"] {
+            width: 20px; height: 20px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checklist label {
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1.5;
+            transition: opacity 0.2s;
+        }
+
+        .checklist input:checked + label {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .checklist-progress {
+            height: 6px;
+            background: var(--border);
+            border-radius: 6px;
+            margin: 20px 0 8px;
+            overflow: hidden;
+        }
+
+        .checklist-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #22c55e);
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .checklist-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ---- COMPARISON TABLE ---- */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            font-size: 0.95rem;
+        }
+
+        .compare-table th {
+            background: var(--accent);
+            color: white;
+            padding: 14px 18px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .compare-table th:first-child { border-radius: 10px 0 0 0; }
+        .compare-table th:last-child  { border-radius: 0 10px 0 0; }
+
+        .compare-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            vertical-align: top;
+        }
+
+        .compare-table tr:nth-child(even) td { background: var(--bg-color); }
+        .compare-table tr:last-child td { border-bottom: none; }
+
+        .compare-table td:first-child {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .tag-good { color: #16a34a; font-weight: 700; }
+        .tag-bad  { color: #dc2626; font-weight: 700; }
+
+        /* Callout */
+        .callout {
+            background: linear-gradient(135deg, var(--accent-light), var(--card-bg));
+            border: 1px solid var(--accent);
+            border-radius: var(--border-radius);
+            padding: 32px 36px;
+            margin: 32px 0;
+        }
+
+        .callout h3 { margin-bottom: 10px; font-size: 1.2rem; }
+        .callout p  { font-size: 0.97rem; }
+
+        /* Responsive fixes */
+        @media (max-width: 640px) {
+            .quiz-options       { grid-template-columns: 1fr; }
+            .schedule-controls  { grid-template-columns: 1fr; }
+            .pomodoro-widget, .quiz-widget, .schedule-builder { padding: 28px 20px; }
+            .timer-display      { font-size: 3.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Wellbeing<span>Hub</span></h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="stress.html">Stress & Anxiety</a></li>
+                <li><a href="study_tips.html" class="active">Study Tips</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <div class="theme-toggle">
+                <label for="theme-select">Theme:</label>
+                <select id="theme-select">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="study-hero">
+        <div class="section-tag"><i class="fas fa-book-open"></i> Study Tips</div>
+        <h1>Study Smarter,<br>Not Just Harder</h1>
+        <p>Real techniques that actually work — backed by science, tested by students, and explained in plain English. No fluff, no impossible advice.</p>
+        <nav class="jump-nav" aria-label="Jump to section">
+            <a href="#why-techniques">Why It Matters</a>
+            <a href="#techniques">Core Techniques</a>
+            <a href="#pomodoro">Pomodoro Timer</a>
+            <a href="#schedule">Plan Your Session</a>
+            <a href="#environment">Your Study Space</a>
+            <a href="#myths">Myth Busters</a>
+            <a href="#exam-week">Exam Week</a>
+            <a href="#quiz">Test Yourself</a>
+        </nav>
+    </section>
+
+    <main class="content-page">
+
+        <!-- WHY SECTION -->
+        <section class="section" id="why-techniques">
+            <div class="section-tag"><i class="fas fa-lightbulb"></i> First, facts</div>
+            <h2>Most Students Study in Ways That Don't Really Work</h2>
+            <p>If you've ever re-read your notes over and over, highlighted everything in your textbook, or crammed the night before an exam — you're not alone. Almost everyone starts out doing this. The problem is that these methods <em> feel </em> like studying, but research consistently shows they're some of the least effective ways to actually remember things.</p>
+            <p>The good news? The techniques that actually work aren't harder — they're just different. And once you understand <em> why </em> they work, it's a lot easier to stick with them.</p>
+
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>How effective is it?</th>
+                        <th>Why</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Re-reading notes</td>
+                        <td><span class="tag-bad">❌ Very low</span></td>
+                        <td>Creates familiarity, not memory. Feels productive but retention is minimal.</td>
+                    </tr>
+                    <tr>
+                        <td>Highlighting text</td>
+                        <td><span class="tag-bad">❌ Very low</span></td>
+                        <td>Passive activity. Your brain isn't processing or connecting ideas.</td>
+                    </tr>
+                    <tr>
+                        <td>Summarising in your own words</td>
+                        <td><span class="tag-good">✓ Moderate</span></td>
+                        <td>Forces you to process information — good, but not enough on its own.</td>
+                    </tr>
+                    <tr>
+                        <td>Active recall (testing yourself)</td>
+                        <td><span class="tag-good">✓✓ Very high</span></td>
+                        <td>Retrieving information strengthens memory pathways dramatically.</td>
+                    </tr>
+                    <tr>
+                        <td>Spaced repetition</td>
+                        <td><span class="tag-good">✓✓ Very high</span></td>
+                        <td>Reviews information at the exact moment you're about to forget it.</td>
+                    </tr>
+                    <tr>
+                        <td>Practice tests / past papers</td>
+                        <td><span class="tag-good">✓✓ Very high</span></td>
+                        <td>Simulates exam conditions. Active recall + feedback in one.</td>
+                    </tr>
+                    <tr>
+                        <td>Teaching someone else</td>
+                        <td><span class="tag-good">✓✓ Very high</span></td>
+                        <td>Forces you to identify and fill gaps in your understanding.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- CORE TECHNIQUES -->
+        <section class="section" id="techniques">
+            <div class="section-tag"><i class="fas fa-tools"></i> Core Techniques</div>
+            <h2>The Techniques That Actually Work</h2>
+            <p>These six methods are supported by decades of cognitive science research. You don't have to use all of them — even picking two or three will make a real difference.</p>
+
+            <div class="card-grid" style="margin-top: 32px;">
+
+                <div class="technique-card">
+                    <div class="technique-header">
+                        <div class="technique-icon"><i class="fas fa-brain"></i></div>
+                        <div>
+                            <h3>Active Recall</h3>
+                            <span class="badge">#1 Most Effective</span>
+                        </div>
+                    </div>
+                    <div class="technique-body">
+                        <p>Instead of reading your notes, close them and try to remember what you just studied. This forces your brain to actually retrieve the information — which is exactly what builds long-term memory.</p>
+                        <p><strong>How to start:</strong></p>
+                        <ul class="how-to-list">
+                            <li data-step="1">Read a section of your notes or textbook</li>
+                            <li data-step="2">Close everything and write down everything you can remember — without peeking</li>
+                            <li data-step="3">Check your notes and see what you missed</li>
+                            <li data-step="4">Focus your next study round on the gaps</li>
+                        </ul>
+                        <div class="science-note">
+                            <i class="fas fa-flask"></i>
+                            Research by Roediger & Karpicke (2006) found that students who used active recall retained 50% more after a week compared to those who re-read.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <div class="technique-header">
+                        <div class="technique-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div>
+                            <h3>Spaced Repetition</h3>
+                            <span class="badge">Memory Booster</span>
+                        </div>
+                    </div>
+                    <div class="technique-body">
+                        <p>Instead of studying one topic for 3 hours in a row, spread it out over several days. Your brain consolidates memories during sleep and rest — so gaps between study sessions actually help.</p>
+                        <p><strong>A simple schedule:</strong></p>
+                        <ul class="how-to-list">
+                            <li data-step="1">Study the topic on <strong>Day 1</strong></li>
+                            <li data-step="2">Review it again on <strong>Day 3</strong></li>
+                            <li data-step="3">Review again on <strong>Day 7</strong></li>
+                            <li data-step="4">Final review on <strong>Day 14</strong> (or before the exam)</li>
+                        </ul>
+                        <div class="science-note">
+                            <i class="fas fa-flask"></i>
+                            This follows the "forgetting curve" discovered by Hermann Ebbinghaus — reviewing right before you forget something locks it in far more strongly.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <div class="technique-header">
+                        <div class="technique-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div>
+                            <h3>The Feynman Technique</h3>
+                            <span class="badge">Deep Understanding</span>
+                        </div>
+                    </div>
+                    <div class="technique-body">
+                        <p>Named after Nobel Prize-winning physicist Richard Feynman. The idea: if you truly understand something, you should be able to explain it simply. If you can't, you don't understand it yet — and now you know exactly what to study.</p>
+                        <ul class="how-to-list">
+                            <li data-step="1">Pick a concept you're studying</li>
+                            <li data-step="2">Explain it out loud or on paper as if teaching a 10-year-old</li>
+                            <li data-step="3">Notice where you get stuck or have to use vague language</li>
+                            <li data-step="4">Go back to your notes and fill those gaps, then try again</li>
+                        </ul>
+                        <div class="science-note">
+                            <i class="fas fa-quote-left"></i>
+                            "If you can't explain it simply, you don't understand it well enough." — Richard Feynman
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <div class="technique-header">
+                        <div class="technique-icon"><i class="fas fa-project-diagram"></i></div>
+                        <div>
+                            <h3>Mind Mapping</h3>
+                            <span class="badge">Great for Visual Learners</span>
+                        </div>
+                    </div>
+                    <div class="technique-body">
+                        <p>A mind map is a visual diagram that connects ideas around a central topic. It's especially powerful for subjects with lots of linked concepts — like science, history, or literature — because your brain remembers structure and connections, not just isolated facts.</p>
+                        <ul class="how-to-list">
+                            <li data-step="1">Write the main topic in the centre of a blank page</li>
+                            <li data-step="2">Draw branches for each main subtopic</li>
+                            <li data-step="3">Add smaller branches for details, examples, or dates</li>
+                            <li data-step="4">Use colour, symbols, and short keywords — not full sentences</li>
+                        </ul>
+                        <div class="science-note">
+                            <i class="fas fa-lightbulb"></i>
+                            Try making your mind map from memory first, then check your notes to add what you missed. Combines mind mapping with active recall.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <div class="technique-header">
+                        <div class="technique-icon"><i class="fas fa-sticky-note"></i></div>
+                        <div>
+                            <h3>Flashcards & Self-Testing</h3>
+                            <span class="badge">Quick & Effective</span>
+                        </div>
+                    </div>
+                    <div class="technique-body">
+                        <p>Flashcards are a classic form of active recall. The key is to actually test yourself — not just read the answer. Struggle a little before flipping the card. That moment of trying to remember is where real learning happens.</p>
+                        <ul class="how-to-list">
+                            <li data-step="1">Write a question or keyword on one side, the answer on the other</li>
+                            <li data-step="2">Look at the question side and genuinely try to answer it</li>
+                            <li data-step="3">Mark cards as "know it," "getting there," or "don't know"</li>
+                            <li data-step="4">Focus future sessions on your "don't know" pile</li>
+                        </ul>
+                        <div class="science-note">
+                            <i class="fas fa-mobile-alt"></i>
+                            Apps like Anki (free) automatically schedule your flashcard reviews using spaced repetition — combining two top techniques at once.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <div class="technique-header">
+                        <div class="technique-icon"><i class="fas fa-scroll"></i></div>
+                        <div>
+                            <h3>Past Paper Practice</h3>
+                            <span class="badge">Exam Game-Changer</span>
+                        </div>
+                    </div>
+                    <div class="technique-body">
+                        <p>Doing past exam papers is one of the single most effective things you can do before an exam. Not just to see the format — but because answering exam-style questions under time pressure is itself a powerful memory exercise.</p>
+                        <ul class="how-to-list">
+                            <li data-step="1">Find past papers from your school or exam board</li>
+                            <li data-step="2">Do them under timed, exam-like conditions (no notes)</li>
+                            <li data-step="3">Mark your own work honestly using the mark scheme</li>
+                            <li data-step="4">Identify your weak areas and study those specifically</li>
+                        </ul>
+                        <div class="science-note">
+                            <i class="fas fa-chart-line"></i>
+                            Students who regularly use past papers consistently score higher — often by whole grade boundaries — compared to those who only review notes.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- POMODORO TIMER -->
+        <section class="section" id="pomodoro">
+            <div class="section-tag"><i class="fas fa-clock"></i> Focus Tool</div>
+            <h2>The Pomodoro Technique — and a Timer to Use Right Now</h2>
+            <p>The Pomodoro Technique was invented by Francesco Cirillo in the late 1980s. The idea is brilliantly simple: work with total focus for 25 minutes, then take a short break. Knowing the break is coming makes it much easier to stay focused during the work period — and the breaks prevent mental fatigue building up.</p>
+
+            <div class="callout">
+                <h3><i class="fas fa-info-circle" style="color:var(--accent); margin-right:8px;"></i> How it works</h3>
+                <p><strong>25 minutes</strong> of focused work → <strong>5 minute</strong> break → repeat. After 4 rounds, take a longer <strong>15–20 minute</strong> break. That's one full Pomodoro cycle. During the work period: no phone, no tabs, no distractions — just one task.</p>
+            </div>
+
+            <div class="pomodoro-widget">
+                <h3>Pomodoro Timer</h3>
+                <p>Pick a mode, press Start, and get to work.</p>
+
+                <div class="timer-mode-btns">
+                    <button class="mode-btn active" onclick="setMode('focus')">🎯 Focus (25 min)</button>
+                    <button class="mode-btn" onclick="setMode('short')">☕ Short Break (5 min)</button>
+                    <button class="mode-btn" onclick="setMode('long')">🌿 Long Break (15 min)</button>
+                </div>
+
+                <div class="timer-progress">
+                    <div class="timer-bar" id="timer-bar"></div>
+                </div>
+
+                <div class="timer-display" id="timer-display">25:00</div>
+                <div class="timer-subtitle" id="timer-subtitle">Ready when you are.</div>
+
+                <div class="timer-controls">
+                    <button class="timer-btn start" id="timer-start-btn" onclick="toggleTimer()">▶ Start</button>
+                    <button class="timer-btn reset" onclick="resetTimer()">↺ Reset</button>
+                </div>
+
+                <div style="margin-top: 28px;">
+                    <div class="pomodoro-count">Sessions completed: <strong id="pomodoro-count">0</strong></div>
+                    <div class="pomodoro-dots" id="pomodoro-dots">
+                        <div class="p-dot" id="dot-1"></div>
+                        <div class="p-dot" id="dot-2"></div>
+                        <div class="p-dot" id="dot-3"></div>
+                        <div class="p-dot" id="dot-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-top: -10px;">💡 During breaks: stand up, stretch, look out a window. Avoid your phone if possible — it restarts the distraction cycle.</p>
+        </section>
+
+        <!-- SCHEDULE BUILDER -->
+        <section class="section" id="schedule">
+            <div class="section-tag"><i class="fas fa-calendar-check"></i> Plan Your Session</div>
+            <h2>Build a Study Session Plan</h2>
+            <p>Use this tool to generate a simple, realistic plan for a study session based on how long you have and what subject you're working on. A good plan removes decision fatigue — you know exactly what to do next without wasting mental energy figuring it out.</p>
+
+            <div class="schedule-builder">
+                <h3>Session Planner</h3>
+                <p>Fill in the details below and we'll build a schedule for you.</p>
+                <div class="schedule-controls">
+                    <div class="schedule-field">
+                        <label>Subject</label>
+                        <input type="text" id="sched-subject" placeholder="e.g. Maths, Biology, History…" maxlength="40">
+                    </div>
+                    <div class="schedule-field">
+                        <label>Available Time</label>
+                        <select id="sched-time">
+                            <option value="60">1 hour</option>
+                            <option value="90" selected>1.5 hours</option>
+                            <option value="120">2 hours</option>
+                            <option value="150">2.5 hours</option>
+                            <option value="180">3 hours</option>
+                        </select>
+                    </div>
+                    <div class="schedule-field">
+                        <label>Start Time</label>
+                        <input type="time" id="sched-start" value="16:00">
+                    </div>
+                    <div class="schedule-field">
+                        <label>Study Goal</label>
+                        <input type="text" id="sched-goal" placeholder="e.g. Review Chapter 4 & do practice questions" maxlength="60">
+                    </div>
+                </div>
+                <button class="schedule-generate" onclick="generateSchedule()">
+                    <i class="fas fa-magic"></i> Generate My Plan
+                </button>
+
+                <div class="schedule-output" id="schedule-output"></div>
+            </div>
+        </section>
+
+        <!-- ENVIRONMENT -->
+        <section class="section" id="environment">
+            <div class="section-tag"><i class="fas fa-home"></i> Your Study Space</div>
+            <h2>Your Environment Affects How Well You Learn</h2>
+            <p>Where and how you study matters almost as much as what techniques you use. Your brain picks up on context — which is why studying in the same spot, at the same time each day, makes it easier to focus. Here's what the research says about setting up an effective study environment.</p>
+
+            <div class="card-grid" style="margin-top: 32px;">
+                <div class="info-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Phone in Another Room</h3>
+                    <p>This one is hard but important. Research by the University of Texas found that just having your phone on your desk — even face-down and silent — reduces working memory and fluid intelligence. The mere presence of it causes a cognitive drain as part of your brain monitors it.</p>
+                    <div class="science-note"><i class="fas fa-lightbulb"></i> Put it in another room or in a bag. Or use "Do Not Disturb" and turn it face-down <em>inside a drawer</em>.</div>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-volume-down"></i>
+                    <h3>Noise Level</h3>
+                    <p>Complete silence works for some people. Others focus better with background sound. What consistently <em>doesn't</em> work: music with lyrics in a language you understand (your language brain processes it and competes with reading/writing).</p>
+                    <p>Good alternatives: lo-fi music, rain sounds, white noise, instrumental music. Try <strong>Lofi Girl</strong> on YouTube or <strong>Brain.fm</strong>.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-sun"></i>
+                    <h3>Light & Temperature</h3>
+                    <p>Natural light is best for alertness and mood. If studying in the evening, bright warm light keeps energy up better than dim light. A slightly cooler room temperature (around 19–21°C / 66–70°F) is associated with better focus and cognitive performance.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-chair"></i>
+                    <h3>Dedicated Study Spot</h3>
+                    <p>Your brain forms associations between places and mental states. If you only study at your desk, sitting down there starts to automatically put your brain in "study mode." This is called context-dependent memory. Avoid studying in bed — it weakens both your sleep and your studying.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-water"></i>
+                    <h3>Stay Hydrated</h3>
+                    <p>Even mild dehydration (as little as 1–2% body weight in fluid loss) reduces concentration, working memory, and reaction time. Keep a glass or bottle of water at your desk and sip regularly — especially during long sessions. Hunger also impairs focus, so don't study on an empty stomach.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-ban"></i>
+                    <h3>Block Distracting Websites</h3>
+                    <p>Willpower is a limited resource — don't rely on it alone. Use website-blocking tools during study sessions so you don't have to fight the temptation constantly. </p>
+                    <p>Try: <strong>Cold Turkey</strong> (free, very strict), <strong>Freedom</strong>, or the <strong>StayFocusd</strong> Chrome extension. Set them up before you sit down.</p>
+                </div>
+            </div>
+
+            <div class="callout" style="margin-top: 40px;">
+                <h3>🎵 What about studying with music?</h3>
+                <p>The research is mixed — it depends on the person and the task. Music <em>with lyrics</em> consistently hurts reading comprehension and writing quality. Instrumental music or ambient sound can help some people by blocking out distracting environmental noise. The best approach: experiment and pay attention to what actually works <em>for you</em>.</p>
+            </div>
+        </section>
+
+        <!-- MYTH BUSTERS -->
+        <section class="section" id="myths">
+            <div class="section-tag"><i class="fas fa-search"></i> Myth Busters</div>
+            <h2>Study Myths — Busted</h2>
+            <p>Some of the most common advice about studying is actually wrong. Click each myth to find out the truth.</p>
+
+            <div class="myth-grid" id="myth-grid">
+
+                <div class="myth-item">
+                    <div class="myth-question" onclick="toggleMyth(this)">
+                        <span class="myth-icon">😴</span>
+                        <span>"Pulling an all-nighter before an exam is worth it."</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="myth-answer">
+                        <strong>❌ False — and this one matters a lot.</strong> Sleep is when your brain consolidates memories and moves information from short-term to long-term storage. Staying up all night means you're studying with a brain that's increasingly impaired, and then taking the exam with a brain that can't properly access what you did manage to learn. Studies consistently show that students who sleep 7–9 hours before an exam significantly outperform those who crammed all night — even when the crammers studied the same material. If you're running out of time, sleep earlier and wake up early to review instead.
+                    </div>
+                </div>
+
+                <div class="myth-item">
+                    <div class="myth-question" onclick="toggleMyth(this)">
+                        <span class="myth-icon">🎧</span>
+                        <span>"I can multitask — I'll study while watching TV."</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="myth-answer">
+                        <strong>❌ False — no one can truly multitask.</strong> What you're actually doing is rapidly switching between tasks, and each switch costs mental energy and time. When you study while watching TV or scrolling, you're processing both at a surface level and retaining neither well. Studies show that studying with background TV reduces comprehension and recall significantly. The 25 focused minutes of a Pomodoro will do more than 2 hours of half-attention studying.
+                    </div>
+                </div>
+
+                <div class="myth-item">
+                    <div class="myth-question" onclick="toggleMyth(this)">
+                        <span class="myth-icon">📚</span>
+                        <span>"Reading the chapter twice is enough to learn it."</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="myth-answer">
+                        <strong>❌ False — re-reading creates familiarity, not memory.</strong> When you re-read something, it feels familiar, which your brain can confuse with actually knowing it. This is called the "fluency illusion." You recognise the words and ideas, but if you were asked to reproduce them without the text, you'd struggle. Active recall — closing the book and trying to remember — breaks this illusion and builds real memory.
+                    </div>
+                </div>
+
+                <div class="myth-item">
+                    <div class="myth-question" onclick="toggleMyth(this)">
+                        <span class="myth-icon">🏃</span>
+                        <span>"Taking breaks is wasting study time."</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="myth-answer">
+                        <strong>❌ False — breaks are part of learning.</strong> Your brain can't sustain intense focus for hours without degrading in quality. Mental fatigue is real and measurable. Regular, short breaks actually maintain your average concentration level far better than grinding through. During breaks, your brain's "default mode network" activates — this is associated with consolidating memories and making connections between ideas. A walk, a stretch, or a few minutes outside isn't laziness. It's part of the process.
+                    </div>
+                </div>
+
+                <div class="myth-item">
+                    <div class="myth-question" onclick="toggleMyth(this)">
+                        <span class="myth-icon">⚡</span>
+                        <span>"Smart students don't need to study as much."</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="myth-answer">
+                        <strong>❌ False — and believing this is actually harmful.</strong> Carol Dweck's research on mindset shows that students who believe intelligence is fixed (a "fixed mindset") give up more easily when things are hard. Students who believe they can grow through effort (a "growth mindset") consistently improve more over time. High-performing students aren't high-performing because they're naturally smarter — they've developed effective study habits. Intelligence without strategy and effort rarely produces results.
+                    </div>
+                </div>
+
+                <div class="myth-item">
+                    <div class="myth-question" onclick="toggleMyth(this)">
+                        <span class="myth-icon">🎯</span>
+                        <span>"Studying more hours always means better results."</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="myth-answer">
+                        <strong>❌ Mostly false — quality over quantity wins.</strong> Two hours of focused, active recall studying will produce far better results than six hours of passive re-reading with distractions. Hours logged is not the goal. Actual encoding of information is the goal. That said, some subjects genuinely require a lot of time — the point is not to cut corners, but to make sure the time you do put in is actually working for you.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- EXAM WEEK -->
+        <section class="section" id="exam-week">
+            <div class="section-tag"><i class="fas fa-graduation-cap"></i> Exam Week</div>
+            <h2>How to Handle Exam Week Without Burning Out</h2>
+            <p>Exam periods are intense — but they're also manageable if you approach them with a strategy instead of just stress. Here's a realistic plan.</p>
+
+            <div class="card-grid" style="margin-top:32px;">
+                <div class="info-card">
+                    <i class="fas fa-map"></i>
+                    <h3>The Week Before: Build a Timetable</h3>
+                    <p>Write out all your exam dates and the time you have left. Then divide topics across the days, giving more time to weaker subjects. A written plan removes the anxiety of "I don't even know where to start."</p>
+                    <ul class="how-to-list">
+                        <li data-step="1">List every exam and its date</li>
+                        <li data-step="2">For each subject, list the topics you need to review</li>
+                        <li data-step="3">Assign specific topics to specific days</li>
+                        <li data-step="4">Include buffer time — don't plan every single hour</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-bed"></i>
+                    <h3>The Night Before: Protect Your Sleep</h3>
+                    <p>The single most important thing you can do the night before an exam is sleep. Not cram. Sleep is when your brain finalises memories. Aim for 7–9 hours. Cramming at midnight is almost never worth the sleep cost.</p>
+                    <ul class="how-to-list">
+                        <li data-step="1">Do a light, calm review of key points — no new material</li>
+                        <li data-step="2">Prepare your bag and stationery the night before</li>
+                        <li data-step="3">Set your alarm (and a backup)</li>
+                        <li data-step="4">Be in bed at a reasonable time — screens off 30 minutes before</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-sun"></i>
+                    <h3>Exam Morning: Set Yourself Up</h3>
+                    <p>Your mental state walking into the exam matters. Don't rush, don't skip breakfast, and avoid classmates who are panicking — anxiety is genuinely contagious.</p>
+                    <ul class="how-to-list">
+                        <li data-step="1">Eat a real breakfast — especially protein and complex carbs</li>
+                        <li data-step="2">Do 5 minutes of calm breathing or a walk</li>
+                        <li data-step="3">Leave early enough to arrive without rushing</li>
+                        <li data-step="4">Briefly review key points — nothing heavy</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-pencil-alt"></i>
+                    <h3>In the Exam: Your Strategy</h3>
+                    <p>How you approach the paper itself affects your score. There's a strategy to it.</p>
+                    <ul class="how-to-list">
+                        <li data-step="1">Read the full paper first — get an overview</li>
+                        <li data-step="2">Start with questions you feel most confident about</li>
+                        <li data-step="3">If you blank on something, move on and come back</li>
+                        <li data-step="4">Spend time proportional to marks — check mark allocations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Pre-exam checklist -->
+            <div class="info-card" style="margin-top: 30px;">
+                <i class="fas fa-clipboard-check"></i>
+                <h3>Pre-Exam Checklist</h3>
+                <p style="margin-bottom: 20px;">Tick these off as you complete them. Your progress is tracked automatically.</p>
+
+                <div class="checklist-progress">
+                    <div class="checklist-bar" id="checklist-bar"></div>
+                </div>
+                <div class="checklist-label" id="checklist-label">0 of 10 completed</div>
+
+                <ul class="checklist" id="exam-checklist" style="margin-top: 18px;">
+                    <li><input type="checkbox" id="c1" onchange="updateChecklist()"><label for="c1">I know the date, time, and location of my exam</label></li>
+                    <li><input type="checkbox" id="c2" onchange="updateChecklist()"><label for="c2">I have reviewed all key topics using active recall</label></li>
+                    <li><input type="checkbox" id="c3" onchange="updateChecklist()"><label for="c3">I have completed at least one past paper or practice test</label></li>
+                    <li><input type="checkbox" id="c4" onchange="updateChecklist()"><label for="c4">I know my weak areas and have spent extra time on them</label></li>
+                    <li><input type="checkbox" id="c5" onchange="updateChecklist()"><label for="c5">My bag is packed with all necessary stationery</label></li>
+                    <li><input type="checkbox" id="c6" onchange="updateChecklist()"><label for="c6">I have set my alarm (and a backup)</label></li>
+                    <li><input type="checkbox" id="c7" onchange="updateChecklist()"><label for="c7">I have a plan for breakfast tomorrow morning</label></li>
+                    <li><input type="checkbox" id="c8" onchange="updateChecklist()"><label for="c8">I am going to bed at a reasonable time tonight</label></li>
+                    <li><input type="checkbox" id="c9" onchange="updateChecklist()"><label for="c9">I have read through the exam format and know what to expect</label></li>
+                    <li><input type="checkbox" id="c10" onchange="updateChecklist()"><label for="c10">I have been kind to myself and reminded myself I've prepared well</label></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- QUIZ -->
+        <section class="section" id="quiz">
+            <div class="section-tag"><i class="fas fa-question-circle"></i> Test Yourself</div>
+            <h2>Quick Study Skills Quiz</h2>
+            <p>Check how much you've taken in — and reinforce your learning at the same time. Active recall, even on study tips about active recall, works.</p>
+
+            <div class="quiz-widget">
+                <div id="quiz-main">
+                    <div class="quiz-question" id="quiz-q"></div>
+                    <div class="quiz-options" id="quiz-opts"></div>
+                    <div class="quiz-feedback" id="quiz-feedback"></div>
+                    <div class="quiz-nav">
+                        <div class="quiz-progress-text" id="quiz-prog"></div>
+                        <button class="quiz-next" id="quiz-next" onclick="nextQuestion()">Next Question →</button>
+                    </div>
+                </div>
+                <div class="quiz-result" id="quiz-result">
+                    <div class="score" id="quiz-score"></div>
+                    <p id="quiz-result-msg"></p>
+                    <button class="quiz-restart" onclick="restartQuiz()">Try Again</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLOSING -->
+        <section class="section">
+            <div class="section-tag"><i class="fas fa-star"></i> Remember</div>
+            <h2>You Don't Have to Do This Perfectly</h2>
+            <p>Study techniques are tools, not rules. Start with one or two, use them consistently for a week, and see what difference they make. Don't try to overhaul everything at once — small changes applied consistently will always beat a perfect plan that never gets started.</p>
+            <p>And if you're struggling — with focus, with motivation, with anxiety about studying — that's worth talking about too. Head to the <a href="stress.html" style="color:var(--accent); font-weight:700;">Stress & Anxiety</a> page for support, or check out the <a href="resources.html" style="color:var(--accent); font-weight:700;">Resources</a> page to find someone to talk to.</p>
+
+            <div class="callout">
+                <h3>💬 The most important study tip of all</h3>
+                <p>Take care of your mental health first. A tired, anxious, burnt-out brain cannot learn effectively. Sleep, movement, food, rest, and human connection are not obstacles to studying — they are the foundation that makes studying possible.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>Wellbeing Hub</h3>
+                <p>Supporting students one mindful moment at a time. You matter more than your grades.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="stress.html">Stress Management</a></li>
+                    <li><a href="study_tips.html">Study Techniques</a></li>
+                    <li><a href="resources.html">Campus Resources</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> hello@wellbeinghub.edu</p>
+                <p style="margin-top:12px; font-size:0.88rem; opacity:0.7;">This site provides educational information only and is not a substitute for professional advice.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Student Wellbeing Hub. Your mental health matters.</p>
+        </div>
+    </footer>
+
+    <script>
+    // =============================================
+    //  THEME TOGGLE
+    // =============================================
+    const themeSelect = document.getElementById('theme-select');
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+        themeSelect.value = 'dark';
+    }
+    themeSelect.addEventListener('change', () => {
+        document.body.classList.toggle('dark', themeSelect.value === 'dark');
+        localStorage.setItem('theme', themeSelect.value);
+    });
+
+    // =============================================
+    //  POMODORO TIMER
+    // =============================================
+    const MODES = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+    let currentMode   = 'focus';
+    let totalSeconds  = MODES.focus;
+    let remainSeconds = MODES.focus;
+    let timerInterval = null;
+    let running       = false;
+    let pomodorosCompleted = 0;
+
+    function setMode(mode) {
+        if (running) return; // don't switch mid-session
+        currentMode   = mode;
+        totalSeconds  = MODES[mode];
+        remainSeconds = MODES[mode];
+        document.querySelectorAll('.mode-btn').forEach((b, i) => {
+            b.classList.toggle('active', ['focus','short','long'][i] === mode);
+        });
+        updateTimerDisplay();
+        document.getElementById('timer-subtitle').textContent = mode === 'focus'
+            ? 'Ready to focus. One task at a time.'
+            : mode === 'short' ? 'Short break — stand up and stretch.'
+            : 'Long break — step away from your desk.';
+    }
+
+    function updateTimerDisplay() {
+        const m = String(Math.floor(remainSeconds / 60)).padStart(2, '0');
+        const s = String(remainSeconds % 60).padStart(2, '0');
+        const display = document.getElementById('timer-display');
+        display.textContent = `${m}:${s}`;
+        display.classList.toggle('urgent', remainSeconds <= 60 && running && currentMode === 'focus');
+
+        const pct = (remainSeconds / totalSeconds) * 100;
+        document.getElementById('timer-bar').style.width = pct + '%';
+    }
+
+    function toggleTimer() {
+        if (running) {
+            clearInterval(timerInterval);
+            running = false;
+            document.getElementById('timer-start-btn').textContent = '▶ Resume';
+            document.getElementById('timer-subtitle').textContent = 'Paused. Press Resume when ready.';
+        } else {
+            running = true;
+            document.getElementById('timer-start-btn').textContent = '⏸ Pause';
+            timerInterval = setInterval(() => {
+                remainSeconds--;
+                updateTimerDisplay();
+                if (remainSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    running = false;
+                    document.getElementById('timer-start-btn').textContent = '▶ Start';
+                    if (currentMode === 'focus') {
+                        pomodorosCompleted = Math.min(pomodorosCompleted + 1, 4);
+                        document.getElementById('pomodoro-count').textContent = pomodorosCompleted;
+                        for (let i = 1; i <= 4; i++) {
+                            document.getElementById('dot-' + i).classList.toggle('done', i <= pomodorosCompleted);
+                        }
+                        document.getElementById('timer-subtitle').textContent = '🎉 Session complete! Take a break.';
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('Pomodoro done!', { body: 'Time for a break. Well done.' });
+                        }
+                    } else {
+                        document.getElementById('timer-subtitle').textContent = '✅ Break over. Ready to focus again?';
+                    }
+                }
+            }, 1000);
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        running = false;
+        remainSeconds = totalSeconds;
+        document.getElementById('timer-start-btn').textContent = '▶ Start';
+        document.getElementById('timer-display').classList.remove('urgent');
+        document.getElementById('timer-subtitle').textContent = 'Reset. Ready when you are.';
+        updateTimerDisplay();
+    }
+
+    updateTimerDisplay();
+
+    // =============================================
+    //  SCHEDULE BUILDER
+    // =============================================
+    function generateSchedule() {
+        const subject = document.getElementById('sched-subject').value.trim() || 'Your Subject';
+        const minutes = parseInt(document.getElementById('sched-time').value);
+        const goal    = document.getElementById('sched-goal').value.trim() || 'Review and practice';
+        const startVal = document.getElementById('sched-start').value || '16:00';
+
+        let [startH, startM] = startVal.split(':').map(Number);
+        let cursor = startH * 60 + startM;
+
+        const fmt = (totalMin) => {
+            const h = Math.floor(totalMin / 60) % 24;
+            const m = totalMin % 60;
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const hh = h % 12 || 12;
+            return `${hh}:${String(m).padStart(2,'0')} ${ampm}`;
+        };
+
+        // Build blocks: 25-min focus, 5-min break, repeat; after 4 pomodoros: 15-min break
+        const blocks = [];
+        let remaining = minutes;
+        let pomodoros = 0;
+
+        blocks.push({ type: 'study', duration: 0, label: `Goal: ${goal}`, icon: '📋', time: '' });
+
+        while (remaining >= 25) {
+            blocks.push({ type: 'study', duration: 25, label: `Focus — ${subject}`, icon: '🎯', time: fmt(cursor) });
+            cursor += 25; remaining -= 25; pomodoros++;
+
+            if (remaining <= 0) break;
+
+            if (pomodoros % 4 === 0 && remaining >= 15) {
+                blocks.push({ type: 'long-break', duration: 15, label: 'Long Break — step away, eat a snack, walk around', icon: '🌿', time: fmt(cursor) });
+                cursor += 15; remaining -= 15;
+            } else if (remaining >= 5) {
+                blocks.push({ type: 'break', duration: 5, label: 'Short Break — stand up, stretch, look out the window', icon: '☕', time: fmt(cursor) });
+                cursor += 5; remaining -= 5;
+            }
+        }
+
+        if (remaining > 0 && remaining < 25) {
+            blocks.push({ type: 'study', duration: remaining, label: `Final Review — ${subject} (${remaining} min)`, icon: '✏️', time: fmt(cursor) });
+            cursor += remaining;
+        }
+
+        blocks.push({ type: 'break', duration: 0, label: `✅ Done by ${fmt(cursor)}. Great work!`, icon: '🎉', time: '' });
+
+        const output = document.getElementById('schedule-output');
+        output.innerHTML = blocks.map(b => `
+            <div class="schedule-block ${b.type}">
+                <span class="block-time">${b.time || ''}</span>
+                <span class="block-icon">${b.icon}</span>
+                <span>${b.label}${b.duration > 0 ? ` <span style="opacity:0.7;font-weight:400;">(${b.duration} min)</span>` : ''}</span>
+            </div>
+        `).join('');
+        output.classList.add('visible');
+    }
+
+    // =============================================
+    //  MYTH ACCORDION
+    // =============================================
+    function toggleMyth(el) {
+        const item = el.parentElement;
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.myth-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+    }
+
+    // =============================================
+    //  EXAM CHECKLIST
+    // =============================================
+    function updateChecklist() {
+        const boxes = document.querySelectorAll('#exam-checklist input[type="checkbox"]');
+        const total = boxes.length;
+        const done  = [...boxes].filter(b => b.checked).length;
+        const pct   = (done / total) * 100;
+        document.getElementById('checklist-bar').style.width = pct + '%';
+        document.getElementById('checklist-label').textContent = `${done} of ${total} completed`;
+    }
+
+    // =============================================
+    //  QUIZ
+    // =============================================
+    const quizData = [
+        {
+            q: "Which study method has been shown to improve long-term memory the most?",
+            opts: ["Re-reading your notes", "Active recall (closing notes and testing yourself)", "Highlighting key phrases", "Copying notes out again"],
+            correct: 1,
+            feedback: "✅ Active recall is consistently rated as one of the most effective study methods by cognitive scientists. The act of retrieving information — even imperfectly — dramatically strengthens the memory pathway. Re-reading, highlighting, and copying are passive activities that feel productive but produce much weaker retention."
+        },
+        {
+            q: "Spaced repetition means you should study the same topic…",
+            opts: ["For 4 hours straight in one session", "At increasing time intervals over multiple days", "Only the night before the exam", "As many times as possible in one day"],
+            correct: 1,
+            feedback: "✅ Spaced repetition spreads reviews out over time — for example, Day 1, Day 3, Day 7, Day 14. This works with the brain's 'forgetting curve': reviewing content just before you'd forget it locks it into long-term memory far more effectively than massed repetition in one sitting."
+        },
+        {
+            q: "What does the Feynman Technique involve?",
+            opts: ["Using coloured pens and mind maps to organise notes", "Explaining a concept simply, as if teaching a child", "Creating a detailed study timetable", "Memorising textbooks word-for-word"],
+            correct: 1,
+            feedback: "✅ The Feynman Technique works because being forced to simplify exposes gaps in your understanding. If you can't explain something in plain terms, you don't yet truly understand it — you just recognise it. Simplifying it makes you identify exactly what to study next."
+        },
+        {
+            q: "Why does having your phone on your desk — even silent and face-down — affect studying?",
+            opts: ["It doesn't affect studying at all", "The screen glare is distracting", "Part of your brain continues to monitor it, reducing working memory", "It interferes with Wi-Fi signals"],
+            correct: 2,
+            feedback: "✅ Research from the University of Texas (2017) found that the mere presence of a smartphone on your desk reduces available cognitive capacity — even if it's off. Your brain uses mental resources to resist checking it. The solution: put it in another room entirely, not just face-down."
+        },
+        {
+            q: "Why are all-nighters generally a bad strategy before an exam?",
+            opts: ["They're only bad if you fall asleep in the exam", "Sleep deprivation is fine as long as you drink enough coffee", "Sleep is when the brain consolidates memories — you lose recall and cognitive function", "All-nighters only affect people who normally sleep 9+ hours"],
+            correct: 2,
+            feedback: "✅ Memory consolidation primarily happens during sleep — particularly deep sleep and REM sleep. When you pull an all-nighter, you study with a progressively impaired brain, and then take the exam without the sleep needed to properly access what you learned. Students who sleep well consistently outperform those who cramm all night, even when studying less overall."
+        },
+        {
+            q: "What is the 'fluency illusion' in studying?",
+            opts: ["When you write too fast and can't read your own notes", "When familiar material feels understood, but can't actually be recalled", "When you study so efficiently it feels like you didn't study", "When you know the topic but can't explain it under pressure"],
+            correct: 1,
+            feedback: "✅ The fluency illusion happens when re-reading material makes it feel familiar — and your brain mistakes that familiarity for knowing. You recognise the words, but if asked to reproduce the knowledge without the text, you'd struggle. Active recall breaks the illusion by testing real retrieval, not just recognition."
+        },
+        {
+            q: "During a Pomodoro session, when should you check your phone?",
+            opts: ["Whenever a notification comes in — quickly", "Only during the break, and ideally keep it in another room", "Every 10 minutes to stay updated", "Whenever you feel like you deserve a reward"],
+            correct: 1,
+            feedback: "✅ The whole point of the Pomodoro technique is uninterrupted focus. Even a brief phone check resets your concentration and adds a 'switching cost' — it typically takes 15–20 minutes to return to full focus after an interruption. Keep the phone out of reach during the 25-minute focus blocks."
+        },
+        {
+            q: "What type of background sound tends to help most students focus?",
+            opts: ["Pop music with familiar lyrics", "Complete silence always works best for everyone", "TV with subtitles on", "Instrumental music or ambient/white noise"],
+            correct: 3,
+            feedback: "✅ Music with lyrics in a language you understand competes with language-processing tasks like reading and writing — your brain literally tries to process both simultaneously and does neither well. Instrumental music or ambient noise (rain sounds, white noise, lo-fi) can block out distracting environmental sounds without competing with your own thinking."
+        }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let answered = false;
+
+    function renderQuestion() {
+        const q = quizData[currentQ];
+        document.getElementById('quiz-q').textContent = q.q;
+        document.getElementById('quiz-prog').textContent = `Question ${currentQ + 1} of ${quizData.length}`;
+        document.getElementById('quiz-feedback').className = 'quiz-feedback';
+        document.getElementById('quiz-feedback').innerHTML = '';
+        document.getElementById('quiz-next').className = 'quiz-next';
+        answered = false;
+
+        const optsEl = document.getElementById('quiz-opts');
+        optsEl.innerHTML = q.opts.map((opt, i) => `
+            <button class="quiz-option" onclick="answerQ(${i})">${opt}</button>
+        `).join('');
+    }
+
+    function answerQ(index) {
+        if (answered) return;
+        answered = true;
+
+        const q = quizData[currentQ];
+        const opts = document.querySelectorAll('.quiz-option');
+        opts.forEach(o => o.disabled = true);
+        opts[index].classList.add(index === q.correct ? 'correct' : 'wrong');
+        if (index !== q.correct) opts[q.correct].classList.add('correct');
+
+        if (index === q.correct) score++;
+
+        const fb = document.getElementById('quiz-feedback');
+        fb.innerHTML = q.feedback;
+        fb.classList.add('visible');
+
+        const nextBtn = document.getElementById('quiz-next');
+        nextBtn.textContent = currentQ < quizData.length - 1 ? 'Next Question →' : 'See My Results';
+        nextBtn.classList.add('visible');
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if (currentQ >= quizData.length) {
+            showResult();
+        } else {
+            renderQuestion();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-main').style.display = 'none';
+        const result = document.getElementById('quiz-result');
+        result.classList.add('visible');
+        document.getElementById('quiz-score').textContent = `${score} / ${quizData.length}`;
+
+        const pct = (score / quizData.length) * 100;
+        let msg = '';
+        if (pct === 100) msg = "🌟 Perfect score! You clearly understand how effective learning works. Now go apply it!";
+        else if (pct >= 75) msg = "👏 Great result! You've absorbed the key ideas. Review any questions you missed.";
+        else if (pct >= 50) msg = "📖 A solid start — head back up and revisit the sections on the techniques you missed.";
+        else msg = "🔄 No worries — this is exactly what the page is here for. Scroll back up and give it another read.";
+        document.getElementById('quiz-result-msg').textContent = msg;
+    }
+
+    function restartQuiz() {
+        currentQ = 0; score = 0; answered = false;
+        document.getElementById('quiz-main').style.display = 'block';
+        document.getElementById('quiz-result').classList.remove('visible');
+        renderQuestion();
+    }
+
+    renderQuestion();
+    </script>
+</body>
+</html>

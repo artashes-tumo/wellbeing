@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress & Anxiety Management • Student Wellbeing Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        /* ---- Page-specific additions ---- */
+        .breathing-tool {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 50px 40px;
+            text-align: center;
+            margin: 36px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .breathing-tool h3 { margin-bottom: 10px; }
+        .breathing-tool p  { margin-bottom: 30px; }
+
+        .breath-circle-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .breath-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent) 30%, #60a5fa88 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            transition: transform 0.8s ease, opacity 0.6s ease;
+            cursor: default;
+            user-select: none;
+        }
+
+        .breath-circle.expand  { transform: scale(1.55); }
+        .breath-circle.hold    { transform: scale(1.55); opacity: 0.75; }
+        .breath-circle.shrink  { transform: scale(1);    }
+
+        .breath-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 36px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .breath-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+        .breath-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            min-height: 1.5em;
+        }
+
+        /* Mood check-in */
+        .mood-checkin {
+            background: linear-gradient(135deg, var(--accent-light), var(--card-bg));
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 44px 40px;
+            margin: 36px 0;
+        }
+
+        .mood-checkin h3 { margin-bottom: 10px; }
+        .mood-checkin p  { margin-bottom: 24px; }
+
+        .mood-options {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 26px;
+        }
+
+        .mood-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            padding: 12px 22px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .mood-btn:hover, .mood-btn.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .mood-advice {
+            background: var(--card-bg);
+            border-left: 5px solid var(--accent);
+            border-radius: var(--border-radius-sm);
+            padding: 22px 26px;
+            display: none;
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+        }
+
+        .mood-advice.visible { display: block; }
+
+        /* Step-list */
+        .step-list { counter-reset: steps; padding: 0; margin-top: 20px; }
+        .step-list li {
+            counter-increment: steps;
+            padding: 18px 18px 18px 64px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+        .step-list li::before {
+            content: counter(steps);
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px; height: 32px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .step-list li strong { color: var(--text-color); }
+
+        /* Tip highlight */
+        .tip-highlight {
+            background: var(--accent-light);
+            border-left: 5px solid var(--accent);
+            border-radius: var(--border-radius-sm);
+            padding: 20px 26px;
+            margin: 24px 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Resource links */
+        .resource-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-top: 26px;
+        }
+
+        .resource-link {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius-sm);
+            padding: 20px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: var(--transition);
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .resource-link:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+            transform: translateY(-3px);
+            color: var(--accent);
+        }
+
+        .resource-link i {
+            font-size: 1.4rem;
+            color: var(--accent);
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Myth vs Fact */
+        .myth-fact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 28px;
+        }
+
+        .myth-card, .fact-card {
+            padding: 26px;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.97rem;
+        }
+
+        .myth-card {
+            background: #fff1f1;
+            border-left: 5px solid #ef4444;
+        }
+        body.dark .myth-card { background: #2a0a0a; }
+
+        .fact-card {
+            background: #f0fdf4;
+            border-left: 5px solid #22c55e;
+        }
+        body.dark .fact-card { background: #052e16; }
+
+        .myth-card strong { color: #dc2626; }
+        .fact-card strong { color: #16a34a; }
+
+        @media (max-width: 600px) {
+            .myth-fact-grid { grid-template-columns: 1fr; }
+            .breathing-tool, .mood-checkin { padding: 32px 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Wellbeing<span>Hub</span></h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="stress.html" class="active">Stress & Anxiety</a></li>
+                <li><a href="study_tips.html">Study Tips</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <div class="theme-toggle">
+                <label for="theme-select">Theme:</label>
+                <select id="theme-select">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content-page">
+
+        <!-- PAGE HEADER -->
+        <section class="page-header section">
+            <h1>Stress & Anxiety Management for Students</h1>
+            <p class="subtitle">You are not alone — and you don't have to figure this out on your own. This guide brings together evidence-based strategies, practical techniques, and real-world advice to help you manage stress, reduce anxiety, and build lasting resilience throughout your university journey.</p>
+        </section>
+
+        <!-- STATISTICS -->
+        <section class="section">
+            <h2><i class="fas fa-chart-bar"></i> Understanding Student Stress Today</h2>
+            <p>University life is filled with growth and opportunity — but also with real pressure: academic workloads, financial stress, social adjustment, identity questions, and an uncertain future. Stress is a normal part of that experience. But when it becomes chronic, it starts to hurt rather than help.</p>
+
+            <div class="stats-grid">
+                <div class="info-card">
+                    <h3>32%</h3>
+                    <p>of college students experience moderate to severe anxiety (Healthy Minds Study 2024–2025)</p>
+                </div>
+                <div class="info-card">
+                    <h3>37%</h3>
+                    <p>report moderate to severe depressive symptoms during their studies</p>
+                </div>
+                <div class="info-card">
+                    <h3>1 in 10</h3>
+                    <p>students report suicidal ideation at some point in their academic journey</p>
+                </div>
+                <div class="info-card">
+                    <h3>45%+</h3>
+                    <p>feel above-average stress levels that interfere with daily functioning</p>
+                </div>
+            </div>
+
+            <p>The good news: stress is manageable. With the right tools and support, you can not only survive university — you can truly thrive. This page is your complete companion, packed with science-backed methods that thousands of students around the world use every day.</p>
+        </section>
+
+        <!-- MOOD CHECK-IN -->
+        <section class="section">
+            <h2><i class="fas fa-heart-pulse"></i> How Are You Feeling Right Now?</h2>
+            <p>Select the option that best describes your current state. We'll suggest what to try first.</p>
+
+            <div class="mood-checkin">
+                <h3>Quick Mood Check-In</h3>
+                <p>Be honest — this is just for you.</p>
+                <div class="mood-options">
+                    <button class="mood-btn" data-mood="overwhelmed"> Overwhelmed</button>
+                    <button class="mood-btn" data-mood="anxious"> Anxious</button>
+                    <button class="mood-btn" data-mood="tired"> Exhausted</button>
+                    <button class="mood-btn" data-mood="okay"> Just okay</button>
+                    <button class="mood-btn" data-mood="good"> Actually good</button>
+                </div>
+                <div class="mood-advice" id="mood-advice"></div>
+            </div>
+        </section>
+
+        <!-- RECOGNIZING SIGNS -->
+        <section class="section">
+            <h2><i class="fas fa-exclamation-triangle"></i> Recognizing the Signs of Stress & Anxiety</h2>
+            <p>Being able to spot symptoms early means you can act before things escalate. Stress becomes problematic when it is chronic, overwhelming, or starts interfering with your studies, sleep, or relationships.</p>
+
+            <div class="grid-2">
+                <div>
+                    <h3>Physical Symptoms</h3>
+                    <ul>
+                        <li>Frequent headaches or migraines</li>
+                        <li>Muscle tension — especially in the neck, shoulders, and jaw</li>
+                        <li>Persistent fatigue, even after sleeping</li>
+                        <li>Sleep disturbances: insomnia, waking often, or oversleeping</li>
+                        <li>Racing heart, chest tightness, or shortness of breath</li>
+                        <li>Stomach issues, nausea, or changes in appetite</li>
+                        <li>Getting sick more often — stress weakens immunity</li>
+                        <li>Skin issues like breakouts or eczema flare-ups</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Emotional & Cognitive Symptoms</h3>
+                    <ul>
+                        <li>Constant worry, racing thoughts, or feeling "on edge"</li>
+                        <li>Difficulty concentrating or persistent "brain fog"</li>
+                        <li>Irritability, sudden mood swings, or anger outbursts</li>
+                        <li>Feeling overwhelmed by tasks that used to feel manageable</li>
+                        <li>Avoiding responsibilities, deadlines, or social situations</li>
+                        <li>Persistent dread, hopelessness, or guilt</li>
+                        <li>Loss of interest in things you used to enjoy</li>
+                        <li>Difficulty making even small decisions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="note">If several of these symptoms persist for more than two weeks and begin interfering with your studies, relationships, or daily life, please reach out to a professional. You deserve support.</p>
+        </section>
+
+        <!-- INTERACTIVE BREATHING TOOL -->
+        <section class="section">
+            <h2><i class="fas fa-lungs"></i> Try a Breathing Exercise Now</h2>
+            <p>Controlled breathing is one of the fastest ways to activate your body's calming response. Try the 4-7-8 technique below — it takes under two minutes and works almost immediately.</p>
+
+            <div class="breathing-tool">
+                <h3>4-7-8 Breathing</h3>
+                <p>Inhale 4s · Hold 7s · Exhale 8s. Press start and follow the circle.</p>
+                <div class="breath-circle-wrap">
+                    <div class="breath-circle" id="breath-circle">Press Start</div>
+                    <div class="breath-label" id="breath-label"></div>
+                    <button class="breath-btn" id="breath-btn" onclick="startBreathing()">Start</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK TECHNIQUES -->
+        <section class="section">
+            <h2><i class="fas fa-bolt"></i> Quick Techniques That Work in Minutes</h2>
+            <p>When stress hits hard, these evidence-based techniques can interrupt the stress response quickly. Keep them saved on your phone so they're always with you.</p>
+
+            <div class="card-grid">
+                <div class="info-card">
+                    <i class="fas fa-square"></i>
+                    <h3>Box Breathing (4-4-4-4)</h3>
+                    <p>Used by Navy SEALs, surgeons, and athletes to perform under extreme pressure.</p>
+                    <ul class="step-list">
+                        <li><strong>Inhale</strong> slowly through your nose for 4 seconds</li>
+                        <li><strong>Hold</strong> your breath for 4 seconds</li>
+                        <li><strong>Exhale</strong> fully through your mouth for 4 seconds</li>
+                        <li><strong>Hold</strong> empty for 4 seconds</li>
+                    </ul>
+                    <p style="margin-top:14px;">Repeat 5–10 times. Perfect for exam halls or moments of acute stress. It works because it gives your mind a rhythmic task to focus on.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-hand-paper"></i>
+                    <h3>5-4-3-2-1 Grounding</h3>
+                    <p>This technique anchors you to the present moment and breaks the cycle of spiraling thoughts — especially useful for panic attacks.</p>
+                    <ul class="step-list">
+                        <li>Name <strong>5 things you can see</strong></li>
+                        <li>Notice <strong>4 things you can physically touch</strong></li>
+                        <li>Listen for <strong>3 things you can hear</strong></li>
+                        <li>Identify <strong>2 things you can smell</strong></li>
+                        <li>Notice <strong>1 thing you can taste</strong></li>
+                    </ul>
+                    <p style="margin-top:14px;">Moving through the senses overrides the brain's threat-detection mode and re-establishes safety.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-wind"></i>
+                    <h3>Physiological Sigh</h3>
+                    <p>Discovered by researchers at Stanford, this is perhaps the single fastest stress-reduction technique available. It works in as little as <strong>one breath cycle</strong>.</p>
+                    <ul class="step-list">
+                        <li>Take a <strong>deep inhale</strong> through your nose</li>
+                        <li>Before exhaling, take a <strong>short extra sniff</strong> to fully inflate the lungs</li>
+                        <li>Release everything in one <strong>long, slow exhale</strong> through your mouth</li>
+                    </ul>
+                    <p style="margin-top:14px;">Repeat 2–3 times. The double inhale re-inflates collapsed air sacs and triggers the parasympathetic nervous system almost immediately.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-ice-cream"></i>
+                    <h3>Cold Water Reset</h3>
+                    <p>Splashing cold water on your face, or briefly placing your wrists under cold running water, can quickly reduce heart rate and break a stress spiral. This stimulates the diving reflex — a built-in calming mechanism.</p>
+                    <div class="tip-highlight">
+                        Best used when: you feel hot, flushed, or like you're losing control of your breathing.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COGNITIVE TECHNIQUES -->
+        <section class="section">
+            <h2><i class="fas fa-brain"></i> Changing How You Think About Stress</h2>
+            <p>Many anxiety symptoms come not from the situation itself, but from how we interpret it. Cognitive techniques help you challenge unhelpful thought patterns and replace them with more realistic ones.</p>
+
+            <div class="card-grid">
+                <div class="info-card">
+                    <i class="fas fa-search"></i>
+                    <h3>Cognitive Restructuring</h3>
+                    <p>When a stressful thought appears, pause and ask yourself:</p>
+                    <ul class="step-list">
+                        <li>Is this thought <strong>based on fact</strong>, or is it a catastrophic assumption?</li>
+                        <li>What is the <strong>realistic worst-case scenario</strong> — and could I handle it?</li>
+                        <li>What would I say to a <strong>friend</strong> having this exact thought?</li>
+                        <li>What <strong>evidence exists</strong> that this will turn out okay?</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-pen"></i>
+                    <h3>Worry Journaling</h3>
+                    <p>Set aside 15 minutes each day as your "designated worry time." Write down everything worrying you, then challenge each item with evidence. This contains worry to a defined space instead of letting it bleed into your whole day.</p>
+                    <div class="tip-highlight">Research shows that people who journal regularly report 25–40% lower anxiety levels over 8 weeks.</div>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-redo"></i>
+                    <h3>Reframe the Pressure</h3>
+                    <p>Anxiety and excitement feel almost identical in the body — racing heart, shallow breathing, heightened awareness. Studies by Harvard psychologist Alison Wood Brooks show that telling yourself <em>"I'm excited"</em> instead of <em>"I'm anxious"</em> measurably improves performance under pressure.</p>
+                    <p style="margin-top:12px;">Try saying out loud before an exam: <strong>"I'm excited about this challenge."</strong></p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Values Clarification</h3>
+                    <p>When you know <em>why</em> you're studying — the deeper purpose — short-term stress becomes more bearable. Write down your top three values and remind yourself of them when things feel hard. Meaningful struggle is categorically different from pointless suffering.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LONG-TERM RESILIENCE -->
+        <section class="section">
+            <h2><i class="fas fa-seedling"></i> Building Long-Term Resilience</h2>
+            <p>Quick techniques manage the crisis. These deeper practices change the baseline — they rewire how your brain responds to stress over time.</p>
+
+            <div class="card-grid">
+                <div class="info-card">
+                    <i class="fas fa-spa"></i>
+                    <h3>Mindfulness Meditation</h3>
+                    <p>Even 10 minutes a day of focused attention practice changes the structure of the prefrontal cortex — the part of the brain responsible for emotional regulation. You don't need any special equipment or experience.</p>
+                    <p style="margin-top:12px;"><strong>Start with:</strong> Headspace, Calm, Insight Timer (free), or search "10-minute guided meditation" on YouTube.</p>
+                    <div class="tip-highlight">A landmark Oxford study found that mindfulness training reduced depression relapse by 43% compared to antidepressants alone.</div>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-dumbbell"></i>
+                    <h3>Physical Exercise</h3>
+                    <p>20–30 minutes of movement 3–5 times per week is one of the most powerful mental health interventions available — comparable in effect size to antidepressant medication for mild-moderate depression.</p>
+                    <p style="margin-top:12px;"><strong>Options that fit student life:</strong> brisk walking, cycling, yoga, dancing, home workouts. Pick something you actually enjoy.</p>
+                    <p style="margin-top:8px;">Exercise increases BDNF (brain-derived neurotrophic factor), which literally helps your brain grow new connections and recover from stress damage.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-moon"></i>
+                    <h3>Sleep as a Foundation</h3>
+                    <p>Sleep deprivation dramatically amplifies the amygdala's response to negative stimuli — meaning everything feels more threatening when you're tired. Prioritizing 7–9 hours is not laziness. It's performance optimization.</p>
+                    <ul class="step-list">
+                        <li>Keep a <strong>consistent wake-up time</strong>, even on weekends</li>
+                        <li>Avoid screens for <strong>30–60 minutes</strong> before bed</li>
+                        <li>Keep your room <strong>cool, dark, and quiet</strong></li>
+                        <li>Avoid caffeine after <strong>2 PM</strong></li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Social Connection</h3>
+                    <p>Loneliness is one of the strongest predictors of poor mental health outcomes in students. Even one meaningful conversation per day has measurable effects on mood and stress hormones.</p>
+                    <p style="margin-top:12px;">You don't need a large social circle — a few close, supportive relationships matter far more than many superficial ones. Reach out to someone today, even just to say hello.</p>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Nutrition & Gut-Brain Connection</h3>
+                    <p>Around 90% of serotonin — your primary mood-regulating neurotransmitter — is produced in the gut. What you eat directly affects how you feel.</p>
+                    <ul style="margin-top:12px; padding-left:0;">
+                        <li style="padding:6px 0; border-bottom:1px solid var(--border); color:var(--text-muted);">Eat regular meals to stabilize blood sugar (mood crashes often follow energy crashes)</li>
+                        <li style="padding:6px 0; border-bottom:1px solid var(--border); color:var(--text-muted);">Prioritize whole foods, vegetables, and protein</li>
+                        <li style="padding:6px 0; color:var(--text-muted);">Stay hydrated — even mild dehydration impairs cognitive function and mood</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-paint-brush"></i>
+                    <h3>Creative Outlets & Flow</h3>
+                    <p>Activities that create a "flow state" — total absorption in an enjoyable task — reliably reduce stress hormones. Music, drawing, writing, coding projects, cooking, sport.</p>
+                    <p style="margin-top:12px;">Psychologist Mihaly Csikszentmihalyi's research shows that flow experiences are some of the highest-rated for wellbeing reported by humans. Schedule them intentionally.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAM STRESS -->
+        <section class="section">
+            <h2><i class="fas fa-file-alt"></i> Managing Exam & Academic Pressure</h2>
+            <p>Exam periods are consistently the most stressful times for students. Here is a complete, week-by-week strategy to keep you grounded and performing at your best.</p>
+
+            <div class="card-grid">
+                <div class="info-card">
+                    <i class="fas fa-calendar-week"></i>
+                    <h3>Weeks Before: Preparation</h3>
+                    <ul class="step-list">
+                        <li>Break your syllabus into <strong>small, daily chunks</strong> — the brain retains bite-sized information better than marathon cramming</li>
+                        <li>Use <strong>active recall</strong> (close your notes and test yourself) rather than passive re-reading — it's up to 4× more effective</li>
+                        <li>Use <strong>spaced repetition</strong>: review material at increasing intervals (day 1, day 3, day 7, day 14)</li>
+                        <li>Build <strong>practice exam conditions</strong> into your schedule — timed practice under pressure builds confidence</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Days Before: Manage Your State</h3>
+                    <ul class="step-list">
+                        <li>Stop cramming new material <strong>24 hours before the exam</strong> — your brain needs consolidation time, not more input</li>
+                        <li>Do a <strong>light review</strong> of key concepts only (summaries, flashcards)</li>
+                        <li>Protect <strong>sleep above all else</strong> — one well-rested brain outperforms a sleep-deprived one that studied for three extra hours</li>
+                        <li>Prepare your <strong>materials and route the night before</strong> to eliminate morning stress</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-running"></i>
+                    <h3>Morning Of: Your Ritual</h3>
+                    <ul class="step-list">
+                        <li>Eat a <strong>balanced breakfast</strong> with protein and complex carbohydrates</li>
+                        <li>Do <strong>5–10 minutes of light movement</strong> — a walk, stretching, or yoga</li>
+                        <li>Practice <strong>box breathing or physiological sighs</strong> on the way to the exam</li>
+                        <li>Avoid talking to classmates who are <strong>panicking</strong> — anxiety is contagious</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <i class="fas fa-pencil-alt"></i>
+                    <h3>In the Exam Hall</h3>
+                    <ul class="step-list">
+                        <li>If panic starts: <strong>3 physiological sighs</strong>, then return to the paper</li>
+                        <li>Read the entire paper first — <strong>start with questions you know best</strong> to build momentum and confidence</li>
+                        <li>If you blank on something, <strong>move on and return</strong> — accessing one memory often unlocks related ones</li>
+                        <li>Pay attention to marks allocated — <strong>spend time proportionally</strong> to what is worth the most</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- MYTHS VS FACTS -->
+        <section class="section">
+            <h2><i class="fas fa-balance-scale"></i> Common Myths About Stress & Mental Health</h2>
+            <p>Misconceptions around stress and mental health can stop students from getting the help they need. Let's clear them up.</p>
+
+            <div class="myth-fact-grid">
+                <div class="myth-card">
+                    <strong>MYTH:</strong> Stress is always bad and should be eliminated.
+                </div>
+                <div class="fact-card">
+                    <strong>FACT:</strong> Short-term stress (eustress) sharpens focus and drives performance. The goal is not zero stress — it's sustainable, manageable stress.
+                </div>
+
+                <div class="myth-card">
+                    <strong>MYTH:</strong> Seeking help means you're weak or can't cope.
+                </div>
+                <div class="fact-card">
+                    <strong>FACT:</strong> Seeking help is a sign of self-awareness and strength. The most high-performing people in the world — athletes, executives, surgeons — all use coaches, therapists, and support systems.
+                </div>
+
+                <div class="myth-card">
+                    <strong>MYTH:</strong> Anxiety disorders are rare and only affect people with "real" problems.
+                </div>
+                <div class="fact-card">
+                    <strong>FACT:</strong> Anxiety disorders are the most common mental health condition globally, affecting people regardless of their external circumstances. Brain chemistry does not discriminate.
+                </div>
+
+                <div class="myth-card">
+                    <strong>MYTH:</strong> You should be able to handle university stress on your own.
+                </div>
+                <div class="fact-card">
+                    <strong>FACT:</strong> University is among the most stressful life transitions humans experience. Support systems — from friends to counselors — are part of how humans are designed to cope.
+                </div>
+            </div>
+        </section>
+
+        <!-- DAILY HABITS -->
+        <section class="section">
+            <h2><i class="fas fa-heart"></i> Daily Habits That Protect Your Mental Health</h2>
+            <p>Small, consistent actions build the foundation for long-term resilience. You don't need to do everything at once — start with two or three.</p>
+            <ul class="lifestyle-list">
+                <li>Prioritize 7–9 hours of sleep consistently</li>
+                <li>Eat regular, balanced meals — don't skip breakfast</li>
+                <li>Stay hydrated (aim for 8 glasses of water per day)</li>
+                <li>Limit caffeine after 2 PM and keep alcohol minimal</li>
+                <li>Get at least 20 minutes of movement daily</li>
+                <li>Spend time in nature — even a park walk helps</li>
+                <li>Build and maintain meaningful social connections</li>
+                <li>Practice time management and set realistic daily goals</li>
+                <li>Schedule enjoyable, non-academic activities every week</li>
+                <li>Limit passive social media scrolling (set app timers)</li>
+                <li>Practice a 5-minute gratitude reflection each evening</li>
+                <li>Reach out to someone when you're struggling, don't isolate</li>
+            </ul>
+        </section>
+
+        <!-- SELF-COMPASSION -->
+        <section class="section">
+            <h2><i class="fas fa-hands-holding-heart"></i> The Role of Self-Compassion</h2>
+            <p>Research by Dr. Kristin Neff at the University of Texas shows that self-compassion — treating yourself with the same kindness you'd offer a friend — is a stronger predictor of psychological wellbeing than self-esteem. And unlike self-esteem, it doesn't depend on success or external validation.</p>
+
+            <div class="card-grid">
+                <div class="info-card">
+                    <i class="fas fa-comment-dots"></i>
+                    <h3>Notice Your Self-Talk</h3>
+                    <p>Pay attention to how you speak to yourself when things go wrong. Would you say those things to a friend going through the same experience? If not, try actively rewriting the script with the kindness you'd offer them.</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-globe"></i>
+                    <h3>Remember Common Humanity</h3>
+                    <p>Suffering and imperfection are not personal failures — they are part of the universal human experience. Every student around you is struggling with something. You are not uniquely broken. You are simply human.</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-pause-circle"></i>
+                    <h3>Mindful Acknowledgment</h3>
+                    <p>Instead of suppressing difficult feelings or being swept away by them, try: "This is a moment of stress. Stress is a normal part of life. May I be kind to myself right now." Naming the emotion reduces its intensity.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HELPFUL RESOURCES -->
+        <section class="section">
+            <h2><i class="fas fa-link"></i> Trusted Tools & Resources</h2>
+            <p>These are reputable, evidence-based resources you can use right now.</p>
+            <div class="resource-links">
+                <a href="https://www.headspace.com" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-spa"></i> Headspace — Guided Meditation
+                </a>
+                <a href="https://www.calm.com" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-cloud"></i> Calm — Sleep & Anxiety
+                </a>
+                <a href="https://insighttimer.com" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-bell"></i> Insight Timer — Free Meditation
+                </a>
+                <a href="https://www.nhs.uk/mental-health/" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-hospital"></i> NHS Mental Health Guide
+                </a>
+                <a href="https://www.mind.org.uk/information-support/for-students/" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-book-open"></i> Mind — Student Mental Health
+                </a>
+                <a href="https://self-compassion.org/category/exercises/" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-heart"></i> Dr. Neff's Self-Compassion Exercises
+                </a>
+                <a href="https://www.7cups.com" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-comments"></i> 7 Cups — Free Peer Listening
+                </a>
+                <a href="https://www.woebot.io" target="_blank" rel="noopener" class="resource-link">
+                    <i class="fas fa-robot"></i> Woebot — CBT Chatbot
+                </a>
+            </div>
+        </section>
+
+        <!-- WHEN TO SEEK HELP -->
+        <section class="section urgent">
+            <h2><i class="fas fa-hand-holding-medical"></i> When & How to Seek Professional Help</h2>
+            <p>Seeking help is one of the smartest and bravest things you can do. Please reach out if you notice:</p>
+            <ul>
+                <li>Persistent panic attacks or overwhelming, uncontrollable worry</li>
+                <li>Thoughts of self-harm or suicide — this is always an emergency</li>
+                <li>Major withdrawal from friends, classes, or activities you used to enjoy</li>
+                <li>Inability to complete basic daily tasks like eating, bathing, or attending class</li>
+                <li>Symptoms that persist for more than two weeks without improvement</li>
+                <li>Turning to alcohol, substances, or other harmful behaviors to cope</li>
+            </ul>
+
+            <div class="cta-box">
+                <strong>You don't have to face this alone.</strong><br>
+                Reach out to your university counseling center, a trusted lecturer, a family member, or a national helpline today.<br><br>
+                <strong>If you are in crisis right now:</strong> Call or text your national crisis line, go to your nearest emergency department, or call emergency services (112 / 911 / 999).
+            </div>
+
+            <p style="margin-top:20px;"><strong>Remember:</strong> Therapy and counseling are not a last resort — they're proactive tools. You don't need to be at rock-bottom to benefit from professional support. Many students use counseling simply to build skills and gain perspective, just like you'd see a doctor for a check-up.</p>
+        </section>
+
+        <!-- CLOSING -->
+        <section class="section">
+            <h2><i class="fas fa-star"></i> A Final Word</h2>
+            <p>Progress is never linear. There will be good days and harder days. On the difficult ones, remember: reaching for a tool from this page — even imperfectly — matters. Every time you breathe intentionally when you're anxious, you're training your nervous system. Every time you reach out instead of isolating, you're building the support that sustains you.</p>
+            <p>You are not behind. You are not broken. You are a human being doing something genuinely hard. Be patient with yourself. The skills you're building here will serve you for the rest of your life — far beyond university.</p>
+            <div class="tip-highlight" style="font-size:1.05rem; font-style:normal;">
+                <strong>Every expert in stress management started exactly where you are now.</strong> The difference between people who thrive and people who struggle is not talent — it's consistent use of the right tools.
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>Wellbeing Hub</h3>
+                <p>Supporting students one mindful moment at a time. You matter more than your grades.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="stress.html">Stress Management</a></li>
+                    <li><a href="study_tips.html">Study Techniques</a></li>
+                    <li><a href="resources.html">Campus Resources</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> hello@wellbeinghub.edu</p>
+                <p style="margin-top:12px; font-size:0.88rem; opacity:0.7;">This site provides educational information only and is not a substitute for professional medical or mental health advice.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Student Wellbeing Hub. Your mental health matters.</p>
+        </div>
+    </footer>
+
+    <script>
+        /* ---- Theme Toggle ---- */
+        const themeSelect = document.getElementById('theme-select');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark');
+            themeSelect.value = 'dark';
+        }
+        themeSelect.addEventListener('change', () => {
+            if (themeSelect.value === 'dark') {
+                document.body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        /* ---- Mood Check-In ---- */
+        const moodData = {
+            overwhelmed: {
+                emoji: '😰',
+                title: 'You\'re overwhelmed.',
+                advice: 'Start with the Physiological Sigh right now — two deep inhales through the nose, then one long exhale out. Do this 3 times. Then pick ONE task only — the smallest possible next step — and do only that. Your only job right now is to get through the next 30 minutes, not the whole week.'
+            },
+            anxious: {
+                emoji: '😟',
+                title: 'You\'re feeling anxious.',
+                advice: 'Try the 5-4-3-2-1 grounding exercise above — it works quickly for anxiety. Then ask yourself: "Is what I\'m worried about actually happening right now, or am I predicting the future?" Most anxiety is about imagined futures. Bring yourself back to this moment. You are safe right now.'
+            },
+            tired: {
+                emoji: '😴',
+                title: 'You\'re exhausted.',
+                advice: 'Tiredness makes everything feel worse and harder. If you can, take a 20-minute nap (set an alarm — beyond 30 minutes triggers deeper sleep cycles). If not, step outside for 10 minutes of sunlight and fresh air. Drink water. Give yourself permission to do less today — rest is productive.'
+            },
+            okay: {
+                emoji: '😐',
+                title: 'You\'re doing okay — and that\'s real.',
+                advice: '"Okay" is underrated. You\'re functioning, you showed up, and you\'re aware of how you feel. Consider using this stable moment to do one small thing from the Daily Habits list above — building resilience is easier when you\'re not in crisis. Even 10 minutes of movement or journaling today will help future-you.'
+            },
+            good: {
+                emoji: '😊',
+                title: 'You\'re feeling good — hold onto this.',
+                advice: 'This is a great time to cement a positive habit. Go for a walk, write down what\'s going well (your brain needs these reminders), or reach out to a friend. Use this energy to set yourself up for harder days ahead. Notice what contributed to feeling good today — it\'s useful data about what works for you.'
+            }
+        };
+
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+
+                const mood = moodData[btn.dataset.mood];
+                const advice = document.getElementById('mood-advice');
+                advice.innerHTML = `<strong>${mood.emoji} ${mood.title}</strong><br><br>${mood.advice}`;
+                advice.classList.add('visible');
+            });
+        });
+
+        /* ---- 4-7-8 Breathing Exercise ---- */
+        let breathInterval = null;
+        let breathRunning = false;
+
+        function startBreathing() {
+            if (breathRunning) {
+                clearTimeout(breathInterval);
+                breathRunning = false;
+                const circle = document.getElementById('breath-circle');
+                const label  = document.getElementById('breath-label');
+                const btn    = document.getElementById('breath-btn');
+                circle.className = 'breath-circle';
+                circle.textContent = 'Press Start';
+                label.textContent  = '';
+                btn.textContent    = 'Start';
+                return;
+            }
+
+            breathRunning = true;
+            document.getElementById('breath-btn').textContent = 'Stop';
+            runCycle();
+        }
+
+        function runCycle() {
+            if (!breathRunning) return;
+            const circle = document.getElementById('breath-circle');
+            const label  = document.getElementById('breath-label');
+
+            // Phase 1: Inhale (4s)
+            circle.className  = 'breath-circle expand';
+            circle.textContent = 'Inhale';
+            label.textContent  = 'Breathe in… 4 seconds';
+
+            breathInterval = setTimeout(() => {
+                if (!breathRunning) return;
+                // Phase 2: Hold (7s)
+                circle.className  = 'breath-circle hold';
+                circle.textContent = 'Hold';
+                label.textContent  = 'Hold… 7 seconds';
+
+                breathInterval = setTimeout(() => {
+                    if (!breathRunning) return;
+                    // Phase 3: Exhale (8s)
+                    circle.className  = 'breath-circle shrink';
+                    circle.textContent = 'Exhale';
+                    label.textContent  = 'Breathe out… 8 seconds';
+
+                    breathInterval = setTimeout(() => {
+                        if (breathRunning) runCycle();
+                    }, 8000);
+                }, 7000);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

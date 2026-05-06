@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources • Student Wellbeing Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        .resources-hero {
+            background: linear-gradient(135deg, #dbeafe, #f0fdf4);
+            padding: 80px 5%;
+            text-align: center;
+        }
+
+        body.dark .resources-hero {
+            background: linear-gradient(135deg, #1e3a5f, #052e16);
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 28px;
+            transition: var(--transition);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .resource-card i {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        .resource-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .resource-card a {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .important-box {
+            background: var(--accent-light);
+            border-left: 5px solid var(--accent);
+            padding: 20px;
+            border-radius: var(--border-radius-sm);
+            margin: 30px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Wellbeing<span>Hub</span></h2>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="stress.html">Stress & Anxiety</a></li>
+                <li><a href="study_tips.html">Study Tips</a></li>
+                <li><a href="resources.html" class="active">Resources</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+
+            <div class="theme-toggle">
+                <label for="theme-select">Theme:</label>
+                <select id="theme-select">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="resources-hero">
+        <h1>Support Resources</h1>
+        <p>You're not alone. If you're struggling, these resources can help you get support quickly and safely.</p>
+    </section>
+
+    <main class="content-page">     
+        <section class="section">
+<h2><i class="fas fa-compass"></i> How to Use These Resources</h2>
+
+<p>
+Different situations need different kinds of help. If you’re not sure where to start, use this guide:
+</p>
+
+<ul>
+<li><strong>Feeling stressed or overwhelmed?</strong> → Try breathing, apps, or talk to a friend</li>
+<li><strong>Feeling anxious often?</strong> → Use techniques + consider speaking to a counselor</li>
+<li><strong>Can’t cope or feel unsafe?</strong> → Contact a helpline immediately</li>
+</ul>
+
+<div class="important-box">
+You do not need to wait until things are “serious” to ask for help. Getting support early makes everything easier.
+</div>
+</section>
+
+
+<!-- SCHOOL SUPPORT (EXPANDED) -->
+<section class="section">
+<h2><i class="fas fa-school"></i> School & Personal Support</h2>
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<i class="fas fa-user-tie"></i>
+<h3>School Counselor</h3>
+<p>
+Your counselor is trained to help with stress, anxiety, academic pressure, and personal issues.
+Everything you share is usually confidential.
+</p>
+<p><strong>Best for:</strong> ongoing stress, anxiety, personal problems</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-chalkboard-teacher"></i>
+<h3>Teachers</h3>
+<p>
+Teachers can help you adjust deadlines, explain topics again, or reduce workload pressure.
+</p>
+<p><strong>Best for:</strong> academic stress, deadlines</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-users"></i>
+<h3>Friends & Family</h3>
+<p>
+Talking to someone you trust can reduce stress instantly. You don’t need solutions—just being heard helps.
+</p>
+<p><strong>Best for:</strong> emotional support</p>
+</div>
+
+</div>
+</section>
+
+
+<!-- HELPLINES (EXPANDED) -->
+<section class="section">
+<h2><i class="fas fa-phone"></i> Helplines & Crisis Support</h2>
+
+<p>
+If you feel overwhelmed, anxious, or unsafe, these services are free and confidential.
+</p>
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<i class="fas fa-headset"></i>
+<h3>TelefonSeelsorge (Austria)</h3>
+<p>24/7 emotional support for anyone.</p>
+<p><strong>Call: 142</strong></p>
+<a href="https://www.telefonseelsorge.at" target="_blank">Visit →</a>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-child"></i>
+<h3>Rat auf Draht</h3>
+<p>Support specifically for children and teenagers.</p>
+<p><strong>Call: 147</strong></p>
+<a href="https://www.rataufdraht.at" target="_blank">Visit →</a>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-globe"></i>
+<h3>International Help</h3>
+<p>If you are outside Austria, search: “mental health hotline + your country”.</p>
+</div>
+
+</div>
+
+<div class="important-box">
+If you feel like you might hurt yourself or are in danger, contact emergency services immediately.
+</div>
+</section>
+
+
+<!-- APPS (EXPANDED) -->
+<section class="section">
+<h2><i class="fas fa-mobile-alt"></i> Apps for Stress & Anxiety</h2>
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<i class="fas fa-brain"></i>
+<h3>Headspace</h3>
+<p>Guided meditation, focus, sleep help.</p>
+<p><strong>Best for:</strong> beginners</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-moon"></i>
+<h3>Calm</h3>
+<p>Sleep stories, relaxation, breathing.</p>
+<p><strong>Best for:</strong> sleep & anxiety</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-heart"></i>
+<h3>Insight Timer</h3>
+<p>Free meditations and relaxation content.</p>
+<p><strong>Best for:</strong> variety</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-clock"></i>
+<h3>Forest App</h3>
+<p>Stay focused while studying by growing virtual trees.</p>
+<p><strong>Best for:</strong> productivity</p>
+</div>
+
+</div>
+</section>
+
+
+<!-- WEBSITES -->
+<section class="section">
+<h2><i class="fas fa-globe"></i> Helpful Websites</h2>
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<i class="fas fa-book"></i>
+<h3>Mind (UK)</h3>
+<p>Clear explanations of mental health topics.</p>
+<a href="https://www.mind.org.uk" target="_blank">Visit →</a>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-lightbulb"></i>
+<h3>YoungMinds</h3>
+<p>Advice specifically for young people.</p>
+<a href="https://www.youngminds.org.uk" target="_blank">Visit →</a>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-graduation-cap"></i>
+<h3>Student Minds</h3>
+<p>Student-focused mental health support.</p>
+<a href="https://www.studentminds.org.uk" target="_blank">Visit →</a>
+</div>
+
+</div>
+</section>
+
+
+<!-- VIDEOS -->
+<section class="section">
+<h2><i class="fas fa-video"></i> Useful Videos</h2>
+
+<p>
+Search on YouTube:
+</p>
+
+<ul>
+<li>“breathing exercises for anxiety”</li>
+<li>“guided meditation 5 minutes”</li>
+<li>“how to calm down quickly”</li>
+</ul>
+</section>
+
+
+<!-- SELF HELP -->
+<section class="section">
+<h2><i class="fas fa-hand-holding-heart"></i> Everyday Self-Help</h2>
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<i class="fas fa-bed"></i>
+<h3>Sleep</h3>
+<p>7–9 hours helps your brain recover and reduces stress.</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-running"></i>
+<h3>Exercise</h3>
+<p>Even short walks improve mood and reduce anxiety.</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-comments"></i>
+<h3>Talk</h3>
+<p>Sharing your thoughts reduces emotional pressure.</p>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-clock"></i>
+<h3>Time Management</h3>
+<p>Planning reduces last-minute stress.</p>
+</div>
+
+</div>
+</section>
+
+
+<!-- FINAL MESSAGE -->
+<section class="section">
+<h2><i class="fas fa-heart"></i> Final Message</h2>
+
+<p>
+It is completely normal to feel stressed sometimes. You are not weak, and you are not alone.
+</p>
+
+<p>
+The most important thing is to take action—small steps make a big difference.
+</p>
+
+<p>
+If something feels too heavy to handle alone, reaching out is the strongest thing you can do.
+</p>
+</section>
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
