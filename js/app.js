@@ -1,21 +1,33 @@
 /* app.js — shared helpers + Firebase */
-  import {
-    initializeApp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    where,
-    orderBy,
-    limit,
-    deleteDoc,
-    doc
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInAnonymously,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 (function () {
   "use strict";
 
@@ -34,6 +46,12 @@
 
   const firebaseApp = initializeApp(firebaseConfig);
   const db = getFirestore(firebaseApp);
+  const auth = getAuth(firebaseApp);
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({
+    prompt: "select_account"
+  });
+  let currentUser = null;
 
   // --------------------------------------------------------------
   // Theme toggle
@@ -44,7 +62,7 @@
     return (
       localStorage.getItem(THEME_KEY) ||
       (window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
+        window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light")
     );
@@ -107,35 +125,115 @@
     return id;
   }
 
+  function getOwnerData() {
+    if (currentUser) {
+      return {
+        user_id: currentUser.uid,
+        user_email: currentUser.email || null
+      };
+    }
+
+    return {
+      client_id: getClientId()
+    };
+  }
+
+  function ownerQuery(collectionName) {
+    if (currentUser) {
+      return query(
+        collection(db, collectionName),
+        where("user_id", "==", currentUser.uid)
+      );
+    }
+
+    return query(
+      collection(db, collectionName),
+      where("client_id", "==", getClientId())
+    );
+  }
+
   // --------------------------------------------------------------
   // Firebase API
   // --------------------------------------------------------------
+  function newestFirst(entries) {
+    return entries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+
+  function docsToData(snapshot) {
+    return snapshot.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+  }
+
   const api = {
+    // ---------------- Auth ----------------
+
+    async signUp(email, password) {
+      return await createUserWithEmailAndPassword(auth, email, password);
+    },
+
+    async signIn(email, password) {
+      return await signInWithEmailAndPassword(auth, email, password);
+    },
+
+    async signInWithGoogle() {
+      return await signInWithPopup(auth, googleProvider);
+    },
+
+    async signInAsGuest() {
+      return await signInAnonymously(auth);
+    },
+
+    async sendMagicLink(email) {
+      const actionCodeSettings = {
+        url: window.location.origin + "/index.html",
+        handleCodeInApp: true
+      };
+
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
+      localStorage.setItem("emailForSignIn", email);
+    },
+
+    async completeMagicLinkLogin() {
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = localStorage.getItem("emailForSignIn");
+
+        if (!email) {
+          email = prompt("Confirm your email");
+        }
+
+        await signInWithEmailLink(auth, email, window.location.href);
+
+        localStorage.removeItem("emailForSignIn");
+      }
+    },
+
+    async signOut() {
+      return await signOut(auth);
+    },
+
+    getCurrentUser() {
+      return currentUser;
+    },
 
     // ---------------- Mood ----------------
 
     async saveMood(data) {
       return await addDoc(collection(db, "moods"), {
         ...data,
-        client_id: getClientId(),
+        ...getOwnerData(),
         created_at: new Date().toISOString()
       });
     },
 
     async moodHistory(limitCount = 30) {
-      const q = query(
-        collection(db, "moods"),
-        where("client_id", "==", getClientId()),
-        orderBy("created_at", "desc"),
-        limit(limitCount)
-      );
+      const q = ownerQuery("moods");
 
       const snapshot = await getDocs(q);
 
-      return snapshot.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      }));
+      return newestFirst(docsToData(snapshot)).slice(0, limitCount);
     },
 
     async moodStats() {
@@ -184,25 +282,17 @@
     async saveJournal(data) {
       return await addDoc(collection(db, "journal"), {
         ...data,
-        client_id: getClientId(),
+        ...getOwnerData(),
         created_at: new Date().toISOString()
       });
     },
 
     async listJournal(limitCount = 50) {
-      const q = query(
-        collection(db, "journal"),
-        where("client_id", "==", getClientId()),
-        orderBy("created_at", "desc"),
-        limit(limitCount)
-      );
+      const q = ownerQuery("journal");
 
       const snapshot = await getDocs(q);
 
-      return snapshot.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      }));
+      return newestFirst(docsToData(snapshot)).slice(0, limitCount);
     },
 
     async deleteJournal(id) {
@@ -214,25 +304,17 @@
     async saveQuiz(data) {
       return await addDoc(collection(db, "quiz"), {
         ...data,
-        client_id: getClientId(),
+        ...getOwnerData(),
         created_at: new Date().toISOString()
       });
     },
 
     async quizHistory(limitCount = 20) {
-      const q = query(
-        collection(db, "quiz"),
-        where("client_id", "==", getClientId()),
-        orderBy("created_at", "desc"),
-        limit(limitCount)
-      );
+      const q = ownerQuery("quiz");
 
       const snapshot = await getDocs(q);
 
-      return snapshot.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      }));
+      return newestFirst(docsToData(snapshot)).slice(0, limitCount);
     }
   };
 
@@ -279,6 +361,22 @@
           </ul>
 
           <div class="nav-right">
+            <span class="auth-status" data-auth-status>
+              Guest
+            </span>
+
+            <button class="btn btn-ghost btn-sm"
+              data-auth-open
+              type="button">
+              Sign in
+            </button>
+
+            <button class="btn btn-ghost btn-sm hidden"
+              data-auth-signout
+              type="button">
+              Sign out
+            </button>
+
             <button class="theme-toggle"
               data-theme-toggle
               aria-label="Toggle theme">
@@ -307,6 +405,251 @@
         navLinks.classList.toggle("open");
       });
     }
+
+    setupAuthControls();
+    updateAuthUI();
+  }
+
+  // --------------------------------------------------------------
+  // Auth UI
+  // --------------------------------------------------------------
+  function renderAuthModal() {
+    if (document.querySelector("[data-auth-modal]")) return;
+
+    const modal = document.createElement("div");
+    modal.className = "auth-modal hidden";
+    modal.setAttribute("data-auth-modal", "");
+    modal.innerHTML = `
+      <div class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <button class="auth-close" type="button" data-auth-close aria-label="Close">×</button>
+        <h2 id="authTitle">Sign in</h2>
+        <p class="muted">Use an account to keep your mood, journal, and quiz results separate from other people.</p>
+
+        <form data-auth-form>
+          <div class="auth-fields">
+            <div class="field">
+            <label for="authEmail">Email</label>
+            <input id="authEmail" type="email" autocomplete="email">
+            </div>
+
+            <div class="field">
+            <label for="authPassword">Password</label>
+            <input id="authPassword" type="password" autocomplete="current-password" minlength="6">
+            </div>
+          </div>
+
+          <div class="auth-actions">
+            <button class="btn btn-primary"
+              type="button"
+              data-email-signin>
+              Sign in
+            </button>
+
+            <button class="btn btn-ghost"
+              type="button"
+              data-email-signup>
+              Create account
+            </button>
+          </div>
+
+          <div class="auth-divider">or</div>
+
+          <button class="btn btn-ghost"
+            type="button"
+            data-google-login>
+            <span class="auth-provider-mark">G</span>
+            Continue with Google
+          </button>
+
+          <button class="btn btn-ghost"
+            type="button"
+            data-guest-login>
+            Continue as Guest
+          </button>
+
+          <button class="btn btn-ghost"
+            type="button"
+            data-magic-link>
+            Send Magic Link
+          </button>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  function setupAuthControls() {
+    renderAuthModal();
+
+    const open = document.querySelector("[data-auth-open]");
+    const signOutBtn = document.querySelector("[data-auth-signout]");
+    const modal = document.querySelector("[data-auth-modal]");
+    const close = document.querySelector("[data-auth-close]");
+    const form = document.querySelector("[data-auth-form]");
+    const emailSignInBtn = document.querySelector("[data-email-signin]");
+    const emailSignUpBtn = document.querySelector("[data-email-signup]");
+    const googleBtn = document.querySelector("[data-google-login]");
+    const guestBtn = document.querySelector("[data-guest-login]");
+    const magicBtn = document.querySelector("[data-magic-link]");
+
+    if (open) {
+      open.addEventListener("click", () => {
+        modal.classList.remove("hidden");
+      });
+    }
+
+    if (close) {
+      close.addEventListener("click", () => {
+        modal.classList.add("hidden");
+      });
+    }
+
+    if (modal) {
+      modal.addEventListener("click", event => {
+        if (event.target === modal) modal.classList.add("hidden");
+      });
+    }
+
+    if (signOutBtn) {
+      signOutBtn.addEventListener("click", async () => {
+        try {
+          await api.signOut();
+          toast("Signed out", 1600);
+        } catch (err) {
+          console.error(err);
+          toast("Could not sign out. Try again.", 2600);
+        }
+      });
+    }
+
+    if (googleBtn) {
+      googleBtn.addEventListener("click", async () => {
+        try {
+          await api.signInWithGoogle();
+          modal.classList.add("hidden");
+          toast("Signed in with Google", 1800);
+        } catch (err) {
+          console.error(err);
+          toast(authErrorMessage(err), 3400);
+        }
+      });
+    }
+
+    if (guestBtn) {
+      guestBtn.addEventListener("click", async () => {
+        try {
+          await api.signInAsGuest();
+          modal.classList.add("hidden");
+          toast("Guest mode enabled", 1800);
+        } catch (err) {
+          console.error(err);
+          toast("Guest login failed", 3000);
+        }
+      });
+    }
+
+    if (magicBtn) {
+      magicBtn.addEventListener("click", async () => {
+        const email = form.querySelector("#authEmail").value.trim();
+
+        if (!email) {
+          toast("Enter your email first", 2200);
+          return;
+        }
+
+        try {
+          await api.sendMagicLink(email);
+          toast("Magic link sent to your email", 3000);
+        } catch (err) {
+          console.error(err);
+          toast("Could not send magic link", 3000);
+        }
+      });
+    }
+
+    if (emailSignInBtn) {
+      emailSignInBtn.addEventListener("click", () => {
+        handleEmailAuth("signin");
+      });
+    }
+
+    if (emailSignUpBtn) {
+      emailSignUpBtn.addEventListener("click", () => {
+        handleEmailAuth("signup");
+      });
+    }
+
+    if (form) {
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        handleEmailAuth("signin");
+      });
+    }
+
+    async function handleEmailAuth(mode) {
+      const email = form.querySelector("#authEmail").value.trim();
+      const password = form.querySelector("#authPassword").value;
+
+      if (!email) {
+        toast("Enter your email first", 2200);
+        return;
+      }
+
+      if (!password) {
+        toast("Enter your password first", 2200);
+        return;
+      }
+
+      try {
+        if (mode === "signup") {
+          await api.signUp(email, password);
+          toast("Account created", 1800);
+        } else {
+          await api.signIn(email, password);
+          toast("Signed in", 1800);
+        }
+
+        modal.classList.add("hidden");
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        toast(authErrorMessage(err), 3200);
+      }
+    }
+  }
+
+  function updateAuthUI() {
+    const status = document.querySelector("[data-auth-status]");
+    const open = document.querySelector("[data-auth-open]");
+    const signOutBtn = document.querySelector("[data-auth-signout]");
+
+    if (status) {
+      status.textContent = currentUser
+        ? currentUser.email || "Signed in"
+        : "Guest";
+
+      status.title = currentUser
+        ? currentUser.email || "Signed in"
+        : "Browser-only mode";
+    }
+
+    if (open) open.classList.toggle("hidden", Boolean(currentUser));
+    if (signOutBtn) signOutBtn.classList.toggle("hidden", !currentUser);
+  }
+
+  function authErrorMessage(err) {
+    const code = err && err.code;
+
+    if (code === "auth/email-already-in-use") return "That email already has an account.";
+    if (code === "auth/invalid-email") return "Enter a valid email address.";
+    if (code === "auth/invalid-credential") return "Email or password is incorrect.";
+    if (code === "auth/popup-blocked") return "Allow popups, then try Google sign-in again.";
+    if (code === "auth/popup-closed-by-user") return "Google sign-in was closed before finishing.";
+    if (code === "auth/unauthorized-domain") return "Add this domain in Firebase Authorized domains.";
+    if (code === "auth/weak-password") return "Use a password with at least 6 characters.";
+
+    return "Authentication failed. Try again.";
   }
 
   // --------------------------------------------------------------
@@ -384,6 +727,15 @@
     });
   }
 
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+    updateAuthUI();
+
+    window.dispatchEvent(new CustomEvent("mae:authchange", {
+      detail: { user }
+    }));
+  });
+
   // --------------------------------------------------------------
   // Init
   // --------------------------------------------------------------
@@ -391,6 +743,7 @@
     applyTheme(getTheme());
     renderHeader();
     renderFooter();
+    api.completeMagicLinkLogin();
   });
 
   // --------------------------------------------------------------
@@ -400,6 +753,7 @@
     api,
     toast,
     getClientId,
+    getCurrentUser: () => currentUser,
     formatDate,
     formatShort,
     toggleTheme

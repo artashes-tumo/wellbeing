@@ -6,8 +6,7 @@ import {
   addDoc,
   getDocs,
   query,
-  orderBy,
-  limit
+  where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -23,6 +22,23 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+const CLIENT_KEY = "mae-client-id";
+
+function getClientId() {
+  let id = localStorage.getItem(CLIENT_KEY);
+
+  if (!id) {
+    id =
+      "c-" +
+      (crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now());
+
+    localStorage.setItem(CLIENT_KEY, id);
+  }
+
+  return id;
+}
 
 export {
   db,
@@ -30,6 +46,30 @@ export {
   addDoc,
   getDocs,
   query,
-  orderBy,
-  limit
+  where
 };
+
+export async function saveMoodEntry(data) {
+  await addDoc(collection(db, "moods"), {
+    ...data,
+    client_id: getClientId(),
+    created_at: new Date().toISOString()
+  });
+}
+
+export async function getMoodHistory() {
+  const q = query(
+    collection(db, "moods"),
+    where("client_id", "==", getClientId())
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs
+    .map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 30);
+}

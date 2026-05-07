@@ -1,5 +1,4 @@
 /* mood.js - Mood Check-in functionality */
-import { saveMoodEntry, getMoodHistory } from "./firebase.js";
 (function () {
   "use strict";
 
@@ -52,7 +51,7 @@ import { saveMoodEntry, getMoodHistory } from "./firebase.js";
   // Save mood check-in
   async function saveMood() {
     if (!selectedMood) {
-      window.MAE.toast("Please pick a mood first 😊", 2000);
+      alert("Please pick a mood first 😊");
       return;
     }
 
@@ -64,38 +63,36 @@ import { saveMoodEntry, getMoodHistory } from "./firebase.js";
 
     try {
       await window.MAE.api.saveMood(data);
-      window.MAE.toast("Mood saved! You're doing great.", 2500);
-      
+      window.MAE.toast("Mood saved", 1800);
+
       // Reset form
       resetForm();
-      
+
       // Refresh display
       await loadMoodData();
     } catch (err) {
       console.error(err);
-      window.MAE.toast("Failed to save. Please try again.", 3000);
+      window.MAE.toast("Failed to save mood. Try again.", 2800);
     }
   }
 
   function resetForm() {
     moodOptions.forEach(opt => opt.classList.remove("selected"));
     selectedMood = null;
-    
+
     intensityButtons.forEach((b, i) => {
       b.classList.toggle("active", parseInt(b.dataset.level) === 3);
     });
     selectedIntensity = 3;
-    
+
     if (moodNote) moodNote.value = "";
   }
 
   // Load all mood data
   async function loadMoodData() {
     try {
-      const [history, stats] = await Promise.all([
-        window.MAE.api.moodHistory(30),
-        window.MAE.api.moodStats()
-      ]);
+      const history = await window.MAE.api.moodHistory(30);
+      const stats = await window.MAE.api.moodStats();
 
       // Update stats
       if (statTotal) statTotal.textContent = stats.total || 0;
@@ -137,8 +134,7 @@ import { saveMoodEntry, getMoodHistory } from "./firebase.js";
             <strong>${entry.mood}</strong> · Intensity ${entry.intensity}
             ${entry.note ? `<p class="muted" style="margin: 0.25rem 0 0;">${entry.note}</p>` : ""}
           </div>
-          <div class="meta">${window.MAE.formatShort(entry.created_at)}</div>
-        </div>`;
+        <div class="meta">${new Date(entry.created_at).toLocaleDateString()}</div>        </div>`;
     });
 
     moodList.innerHTML = html;
@@ -163,7 +159,7 @@ import { saveMoodEntry, getMoodHistory } from "./firebase.js";
     let html = "";
     last7Days.forEach(({ day, dateKey }) => {
       const dayEntries = entries.filter(e => e.created_at.startsWith(dateKey));
-      const avgIntensity = dayEntries.length 
+      const avgIntensity = dayEntries.length
         ? Math.round(dayEntries.reduce((sum, e) => sum + e.intensity, 0) / dayEntries.length)
         : 0;
 
@@ -193,6 +189,10 @@ import { saveMoodEntry, getMoodHistory } from "./firebase.js";
 
   // Load data when page loads
   document.addEventListener("DOMContentLoaded", () => {
+    loadMoodData();
+  });
+
+  window.addEventListener("mae:authchange", () => {
     loadMoodData();
   });
 

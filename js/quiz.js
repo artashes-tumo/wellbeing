@@ -46,7 +46,10 @@
     const savedAnswer = answers[currentQuestion];
     if (savedAnswer !== null) {
       const selectedOption = optionsContainer.querySelector(`input[value="${savedAnswer}"]`);
-      if (selectedOption) selectedOption.checked = true;
+      if (selectedOption) {
+        selectedOption.checked = true;
+        selectedOption.closest(".quiz-option").classList.add("selected");
+      }
     }
 
     // Add click listeners to options
@@ -120,47 +123,64 @@
     resultContainer.classList.remove("hidden");
     resultContainer.innerHTML = resultHTML;
 
-    // Save result
     saveQuizResult(totalScore, percentage);
   }
 
   async function saveQuizResult(score, percentage) {
     try {
       await window.MAE.api.saveQuiz({
-        score: score,
-        percentage: percentage,
-        answers: answers
+        score,
+        percentage,
+        answers: [...answers]
       });
+      window.MAE.toast("Quiz result saved", 1800);
+      await loadQuizHistory();
     } catch (e) {
       console.error("Failed to save quiz result", e);
+      window.MAE.toast("Could not save quiz result. Try again.", 2800);
     }
   }
 
   // Load past results
   async function loadQuizHistory() {
     if (!quizHistory) return;
+
     try {
       const history = await window.MAE.api.quizHistory(5);
-      
-      if (!history || history.length === 0) {
-        quizHistory.innerHTML = `<p class="muted">Your past quiz results will show here.</p>`;
-        return;
-      }
-
-      let html = "<div class='mood-history'>";
-      history.forEach(result => {
-        const date = window.MAE.formatShort(result.created_at);
-        html += `
-          <div class="mood-entry">
-            <strong>${result.score}/28</strong>
-            <span class="muted">${date}</span>
-          </div>`;
-      });
-      html += "</div>";
-      quizHistory.innerHTML = html;
+      renderQuizHistory(history);
     } catch (err) {
       quizHistory.innerHTML = `<p class="muted">Could not load history.</p>`;
     }
+  }
+
+  function renderQuizHistory(history) {
+    if (!history || history.length === 0) {
+      quizHistory.innerHTML = `<p class="muted">Your past quiz results will show here.</p>`;
+      return;
+    }
+
+    let html = "<div class='mood-history'>";
+    history.forEach(result => {
+      const date = formatShort(result.created_at);
+      html += `
+        <div class="mood-entry">
+          <strong>${result.score}/28</strong>
+          <span class="muted">${date}</span>
+        </div>`;
+    });
+    html += "</div>";
+    quizHistory.innerHTML = html;
+  }
+
+  function formatShort(iso) {
+    if (window.MAE && window.MAE.formatShort) {
+      return window.MAE.formatShort(iso);
+    }
+
+    return new Date(iso).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric"
+    });
   }
 
   window.restartQuiz = function() {
@@ -178,6 +198,10 @@
   // Initialize
   document.addEventListener("DOMContentLoaded", () => {
     renderQuestion();
+    loadQuizHistory();
+  });
+
+  window.addEventListener("mae:authchange", () => {
     loadQuizHistory();
   });
 

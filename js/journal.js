@@ -165,4 +165,8 @@
     loadJournalEntries();
   });
 
+  window.addEventListener("mae:authchange", () => {
+    loadJournalEntries();
+  });
+
 })();
