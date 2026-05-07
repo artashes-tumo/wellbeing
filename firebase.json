@@ -1,13 +1,10 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "html",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "**/.venv/**",
-      "**/*.py",
-      "venv/**"
+      "**/node_modules/**"
     ]
   }
 }
