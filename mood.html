@@ -1,0 +1,243 @@
+<html lang="en" data-darkreader-proxy-injected="true" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mood Check-in — Mind at Ease</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%234a6fa5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=Manrope:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1289.0" data-gr-ext-installed="">
+  <header class="site-header" data-header="" data-active="mood">
+    <div class="container">
+      <nav class="nav">
+        <a href="/index.html" class="brand" data-testid="brand-link">
+          <span class="brand-dot"></span>
+          Mind at Ease
+        </a>
+        <ul class="nav-links" data-nav-links="">
+          <li><a href="/index.html" class="" data-testid="nav-home">Home</a></li>
+          <li><a href="/stress.html" class="" data-testid="nav-stress">Stress &amp; Anxiety</a></li>
+          <li><a href="/study.html" class="" data-testid="nav-study">Study Tips</a></li>
+          <li><a href="/mood.html" class="active" data-testid="nav-mood">Mood</a></li>
+          <li><a href="/journal.html" class="" data-testid="nav-journal">Journal</a></li>
+          <li><a href="/quiz.html" class="" data-testid="nav-quiz">Quiz</a></li>
+          <li><a href="/resources.html" class="" data-testid="nav-resources">Resources</a></li>
+          <li><a href="/about.html" class="" data-testid="nav-about">About</a></li>
+        </ul>
+        <div class="nav-right">
+          <button class="theme-toggle" data-theme-toggle="" aria-label="Toggle theme"
+            data-testid="theme-toggle-btn"></button>
+          <button class="menu-btn" data-menu-toggle="" aria-label="Menu" data-testid="menu-toggle-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke=""
+              style="--darkreader-inline-stroke: currentColor;">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Takes about 10 seconds</span>
+        <h1 style="margin-top: 1rem;">How are you feeling right now?</h1>
+        <p class="lead"
+          style="color: var(--text-muted); max-width: 640px; --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #aeadaa));"
+          data-darkreader-inline-color="">
+          Your check-ins are saved only in your own browser. No account, no email — just a private little log of how
+          your days have been going.
+        </p>
+
+        <!-- CHECK-IN FORM -->
+        <div class="topic fade-in">
+          <h2 style="margin-top: 0;">Pick a feeling</h2>
+          <div class="mood-picker" id="moodPicker" data-testid="mood-picker">
+            <div class="mood-option" data-mood="great" data-testid="mood-great">
+              <span class="emoji">😄</span>
+              <span class="label">Great</span>
+            </div>
+            <div class="mood-option" data-mood="good" data-testid="mood-good">
+              <span class="emoji">🙂</span>
+              <span class="label">Good</span>
+            </div>
+            <div class="mood-option" data-mood="okay" data-testid="mood-okay">
+              <span class="emoji">😐</span>
+              <span class="label">Okay</span>
+            </div>
+            <div class="mood-option" data-mood="tired" data-testid="mood-tired">
+              <span class="emoji">😴</span>
+              <span class="label">Tired</span>
+            </div>
+            <div class="mood-option" data-mood="stressed" data-testid="mood-stressed">
+              <span class="emoji">😰</span>
+              <span class="label">Stressed</span>
+            </div>
+            <div class="mood-option" data-mood="anxious" data-testid="mood-anxious">
+              <span class="emoji">😟</span>
+              <span class="label">Anxious</span>
+            </div>
+            <div class="mood-option" data-mood="sad" data-testid="mood-sad">
+              <span class="emoji">😔</span>
+              <span class="label">Sad</span>
+            </div>
+            <div class="mood-option" data-mood="angry" data-testid="mood-angry">
+              <span class="emoji">😤</span>
+              <span class="label">Frustrated</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>How strong is that feeling?</label>
+            <div class="intensity" id="intensityPicker" data-testid="intensity-picker">
+              <button data-level="1" data-testid="intensity-1">1</button>
+              <button data-level="2" data-testid="intensity-2">2</button>
+              <button data-level="3" class="active" data-testid="intensity-3">3</button>
+              <button data-level="4" data-testid="intensity-4">4</button>
+              <button data-level="5" data-testid="intensity-5">5</button>
+              <span class="muted" style="font-size: 0.85rem; margin-left: 0.5rem;">1 = tiny · 5 = strong</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="moodNote">Add a short note (optional)</label>
+            <textarea id="moodNote" maxlength="500" placeholder="What's on your mind? One sentence is plenty."
+              data-testid="mood-note-input"></textarea>
+          </div>
+
+          <button class="btn btn-primary btn-lg" id="moodSave" data-testid="mood-save-btn">Save check-in</button>
+        </div>
+
+        <!-- SNAPSHOT -->
+        <div class="topic fade-in" id="snapshot">
+          <h2 style="margin-top: 0;">Your snapshot</h2>
+          <div class="grid grid-3">
+            <div class="card">
+              <p class="muted mb-0" style="font-size: 0.85rem;">Check-ins (all time)</p>
+              <p style="font-family: Fraunces, serif; font-size: 2rem; margin: 0.25rem 0;"><span id="statTotal"
+                  data-testid="stat-total">0</span></p>
+            </div>
+            <div class="card">
+              <p class="muted mb-0" style="font-size: 0.85rem;">Last 7 days</p>
+              <p style="font-family: Fraunces, serif; font-size: 2rem; margin: 0.25rem 0;"><span id="stat7"
+                  data-testid="stat-7">0</span></p>
+            </div>
+            <div class="card">
+              <p class="muted mb-0" style="font-size: 0.85rem;">Most common mood (30 days)</p>
+              <p style="font-family: Fraunces, serif; font-size: 1.3rem; margin: 0.25rem 0;"><span id="statTop"
+                  data-testid="stat-top">—</span></p>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 2rem;">Moods this week</h3>
+          <div id="moodChart" class="bar-chart" style="margin-bottom: 2.5rem;" data-testid="mood-chart">
+            <div class="bar" style="height: 0%">
+
+              <span class="bar-label">Thu</span>
+            </div>
+            <div class="bar" style="height: 0%">
+
+              <span class="bar-label">Fri</span>
+            </div>
+            <div class="bar" style="height: 0%">
+
+              <span class="bar-label">Sat</span>
+            </div>
+            <div class="bar" style="height: 0%">
+
+              <span class="bar-label">Sun</span>
+            </div>
+            <div class="bar" style="height: 0%">
+
+              <span class="bar-label">Mon</span>
+            </div>
+            <div class="bar" style="height: 0%">
+
+              <span class="bar-label">Tue</span>
+            </div>
+            <div class="bar" style="height: 0%">
+
+              <span class="bar-label">Wed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="topic fade-in" id="history">
+          <h2 style="margin-top: 0;">Recent check-ins</h2>
+          <div id="moodList" class="mood-history" data-testid="mood-list">
+            <div class="empty">
+              <div class="icon">📝</div>
+              <p>No check-ins yet. Save your first one above — it's completely private.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" data-footer="">
+    <div class="container">
+      <div>
+        <a href="/index.html" class="brand" style="margin-bottom: 1rem;">
+          <span class="brand-dot"></span>
+          Mind at Ease
+        </a>
+        <p class="muted" style="max-width: 340px; margin-top: 0.5rem;">A calm corner of the internet for school students
+          navigating stress, anxiety, and study pressure.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/stress.html">Stress &amp; Anxiety</a></li>
+          <li><a href="/study.html">Study Tips</a></li>
+          <li><a href="/mood.html">Mood Check-in</a></li>
+          <li><a href="/journal.html">Journal</a></li>
+          <li><a href="/quiz.html">Stress Quiz</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul>
+          <li><a href="/resources.html">Helplines (Austria)</a></li>
+          <li><a href="/resources.html#international">International Resources</a></li>
+          <li><a href="/about.html">About this project</a></li>
+        </ul>
+        <p class="muted" style="margin-top: 1rem; font-size: 0.85rem;">If you are in immediate danger, call emergency
+          services: <strong>112</strong> (Austria &amp; EU).</p>
+      </div>
+    </div>
+    <div class="footer-bottom container">
+      <p>© 2026 Mind at Ease · An MYP Year 4 Service &amp; Action project. Not a substitute for professional help.</p>
+    </div>
+  </footer>
+  
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/mood.js"></script>
+  <script src="js/app.js"></script>
+  <script defer=""
+    src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516"
+    integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg=="
+    data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;7f7b0fd8732c4326aae4b9d58d5c514a&quot;,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}"
+    crossorigin="anonymous"></script>
+
+
+  <deepl-input-controller translate="no"></deepl-input-controller>
+  <div id="pet-d911af300707d4" class=" spriteling"
+    style="top: 0px; left: 644.67px; display: none; width: 128px; height: 128px; background-image: url(&quot;chrome-extension://ifaicffibnedodkbekogndkdfeojcofb/assets/cats/calico/calico_1024x1024_8x8.png&quot;); background-position: -896px -896px;">
+  </div>
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>

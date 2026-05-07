@@ -1,4 +1,5 @@
 /* mood.js - Mood Check-in functionality */
+import { saveMoodEntry, getMoodHistory } from "./firebase.js";
 (function () {
   "use strict";
 
