@@ -187,7 +187,7 @@ import {
 
     async sendMagicLink(email) {
       const actionCodeSettings = {
-        url: window.location.origin + "/index.html",
+        url: `${window.location.origin}/index.html`,
         handleCodeInApp: true
       };
 
@@ -562,8 +562,10 @@ import {
           await api.sendMagicLink(email);
           toast("Magic link sent to your email", 3000);
         } catch (err) {
-          console.error(err);
-          toast("Could not send magic link", 3000);
+          console.error("Magic link error:", err);
+          console.error("Error code:", err.code);
+          console.error("Error message:", err.message);
+          toast("Could not send magic link: " + (err.message || err.code), 3000);
         }
       });
     }
@@ -661,10 +663,42 @@ import {
 
     footer.innerHTML = `
       <div class="container">
-        <p>
-          © ${new Date().getFullYear()}
-          Mind at Ease
-        </p>
+        <div>
+          <a href="/index.html" class="brand" style="margin-bottom: 1rem;">
+            <span class="brand-dot"></span>
+            Mind at Ease
+          </a>
+          <p class="muted" style="max-width: 340px; margin-top: 0.5rem;">
+            A calm corner of the internet for school students navigating stress, anxiety, and study pressure.
+          </p>
+        </div>
+
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="/stress.html">Stress & Anxiety</a></li>
+            <li><a href="/study.html">Study Tips</a></li>
+            <li><a href="/mood.html">Mood Check-in</a></li>
+            <li><a href="/journal.html">Journal</a></li>
+            <li><a href="/quiz.html">Stress Quiz</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/resources.html">Helplines (Austria)</a></li>
+            <li><a href="/resources.html#international">International Resources</a></li>
+            <li><a href="/about.html">About this project</a></li>
+          </ul>
+          <p class="muted" style="margin-top: 1rem; font-size: 0.85rem;">
+            If you are in immediate danger, call emergency services: <strong>112</strong> (Austria & EU).
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom container">
+        <p>© ${new Date().getFullYear()} Mind at Ease · An MYP Year 4 Service & Action project. Not a substitute for professional help.</p>
       </div>
     `;
   }
@@ -740,10 +774,19 @@ import {
   // Init
   // --------------------------------------------------------------
   document.addEventListener("DOMContentLoaded", () => {
-    applyTheme(getTheme());
     renderHeader();
+    applyTheme(getTheme());
     renderFooter();
-    api.completeMagicLinkLogin();
+    api.completeMagicLinkLogin()
+      .then(() => {
+        if (isSignInWithEmailLink(auth, window.location.href)) {
+          toast("Signed in with magic link", 1800);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        toast(authErrorMessage(err), 3200);
+      });
   });
 
   // --------------------------------------------------------------
